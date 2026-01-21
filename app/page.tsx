@@ -1,16 +1,38 @@
 'use client';
 
 import { useState } from 'react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function Home() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // We'll connect this to Firebase later
-    console.log('Email submitted:', email);
-    setSubmitted(true);
+    setLoading(true);
+    
+    try {
+      await addDoc(collection(db, 'waitlist'), {
+        email: email,
+        createdAt: serverTimestamp(),
+      });
+      
+      await fetch('/api/send-welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      
+      console.log('Email saved and welcome sent:', email);
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error saving email. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -28,7 +50,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
       <div className="max-w-4xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6">
             Make Your Clients <span className="text-purple-600">Glow</span>
@@ -38,7 +59,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Problem/Solution */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Tired of scattered customer data?</h2>
           <p className="text-gray-600 mb-6">
@@ -46,7 +66,6 @@ export default function Home() {
             ClientGlow keeps everything organized so you can focus on what matters: building relationships.
           </p>
           
-          {/* Key Features */}
           <div className="grid md:grid-cols-2 gap-4 mt-8">
             <div className="flex items-start">
               <div className="text-2xl mr-3">🎂</div>
@@ -79,7 +98,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Signup Form */}
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Be the first to know</h2>
           <p className="text-gray-600 mb-6">Join the waitlist and get early access when we launch</p>
@@ -92,19 +110,20 @@ export default function Home() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
+                disabled={loading}
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
               />
               <button
                 type="submit"
-                className="px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition"
+                disabled={loading}
+                className="px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
               >
-                Join Waitlist
+                {loading ? 'Saving...' : 'Join Waitlist'}
               </button>
             </div>
           </form>
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-12 text-gray-500 text-sm">
           <p>Built for MLM consultants who care about their customers</p>
         </div>
