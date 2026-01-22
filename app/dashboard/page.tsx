@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import AddCustomerModal from './components/AddCustomerModal';
 import CustomerDetailModal from './components/CustomerDetailModal';
+import EditCustomerModal from './components/EditCustomerModal';
 
 interface Customer {
   id: string;
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
   const fetchCustomers = async () => {
     try {
@@ -113,13 +115,13 @@ export default function Dashboard() {
                   {filteredCustomers.map((customer) => (
                     <tr key={customer.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm text-gray-900">
-  <button
-    onClick={() => setSelectedCustomer(customer)}
-    className="text-purple-600 hover:text-purple-800 font-medium"
-  >
-    {customer.name}
-  </button>
-</td>
+                        <button
+                          onClick={() => setSelectedCustomer(customer)}
+                          className="text-purple-600 hover:text-purple-800 font-medium"
+                        >
+                          {customer.name}
+                        </button>
+                      </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{customer.email}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{customer.phone || '-'}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{customer.customerSince || '-'}</td>
@@ -137,11 +139,23 @@ export default function Dashboard() {
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchCustomers}
       />
+
       <CustomerDetailModal
-  customer={selectedCustomer}
-  isOpen={!!selectedCustomer}
-  onClose={() => setSelectedCustomer(null)}
-/>
+        customer={selectedCustomer}
+        isOpen={!!selectedCustomer}
+        onClose={() => setSelectedCustomer(null)}
+        onEdit={() => {
+          setEditingCustomer(selectedCustomer);
+          setSelectedCustomer(null);
+        }}
+      />
+
+      <EditCustomerModal
+        customer={editingCustomer}
+        isOpen={!!editingCustomer}
+        onClose={() => setEditingCustomer(null)}
+        onSuccess={fetchCustomers}
+      />
     </div>
   );
 }
