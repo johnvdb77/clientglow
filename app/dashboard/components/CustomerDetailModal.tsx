@@ -5,12 +5,14 @@ interface CustomerDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEdit: () => void;
+  onDelete: () => void;
 }
 
-export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit }: CustomerDetailModalProps) {
-  console.log('CustomerDetailModal props:', { customer, isOpen, onEdit: typeof onEdit });
+export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit, onDelete }: CustomerDetailModalProps) {
+  console.log('Modal props:', { onEdit: typeof onEdit, onDelete: typeof onDelete });
   
   if (!isOpen || !customer) return null;
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
@@ -75,19 +77,25 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit 
         </div>
 
         <div className="mt-6 flex gap-3">
-          <button
-            onClick={onEdit}
-            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-          >
-            Edit Customer
-          </button>
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-          >
-            Close
-          </button>
-        </div>
+  <button
+    onClick={onEdit}
+    className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+  >
+    Edit
+  </button>
+  <button
+    onClick={onDelete}
+    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+  >
+    Delete
+  </button>
+  <button
+    onClick={onClose}
+    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+  >
+    Close
+  </button>
+</div> 
       </div>
     </div>
   );

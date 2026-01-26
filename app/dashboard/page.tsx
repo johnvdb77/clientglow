@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import AddCustomerModal from './components/AddCustomerModal';
@@ -43,7 +43,21 @@ export default function Dashboard() {
   useEffect(() => {
     fetchCustomers();
   }, []);
-
+  const handleDeleteCustomer = async (customer: Customer) => {
+    if (!confirm(`Are you sure you want to delete ${customer.name}? This cannot be undone.`)) {
+      return;
+    }
+  
+    try {
+      await deleteDoc(doc(db, 'customers', customer.id));
+      setSelectedCustomer(null);
+      fetchCustomers();
+      alert('Customer deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      alert('Failed to delete customer. Please try again.');
+    }
+  };
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -148,6 +162,7 @@ export default function Dashboard() {
           setEditingCustomer(selectedCustomer);
           setSelectedCustomer(null);
         }}
+        onDelete={() => handleDeleteCustomer(selectedCustomer!)}
       />
 
       <EditCustomerModal
