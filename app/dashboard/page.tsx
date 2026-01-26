@@ -16,6 +16,8 @@ interface Customer {
   email: string;
   phone: string;
   customerSince: string;
+  birthday: string;
+  lastOrderDate: string;
 }
 
 export default function Dashboard() {
