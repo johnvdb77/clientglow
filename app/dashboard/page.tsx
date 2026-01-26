@@ -130,22 +130,42 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {filteredCustomers.map((customer) => (
-                    <tr key={customer.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        <button
-                          onClick={() => setSelectedCustomer(customer)}
-                          className="text-purple-600 hover:text-purple-800 font-medium"
-                        >
-                          {customer.name}
-                        </button>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{customer.email}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{customer.phone || '-'}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{customer.customerSince || '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
+  {filteredCustomers.map((customer) => (
+    <tr key={customer.id} className="hover:bg-gray-50">
+      <td className="px-4 py-3 text-sm text-gray-900">
+        <button
+          onClick={() => setSelectedCustomer(customer)}
+          className="text-purple-600 hover:text-purple-800 font-medium"
+        >
+          {customer.name}
+        </button>
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-600">{customer.email}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{customer.phone || '-'}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{customer.customerSince || '-'}</td>
+      <td className="px-4 py-3 text-sm">
+        <div className="flex gap-2">
+          <a
+            href={`mailto:${customer.email}`}
+            className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs font-medium"
+            title="Send email"
+          >
+            📧 Email
+          </a>
+          {customer.phone && (
+            <a
+              href={`tel:${customer.phone}`}
+              className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs font-medium"
+              title="Call customer"
+            >
+              📞 Call
+            </a>
+          )}
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
               </table>
             </div>
           )}
