@@ -8,6 +8,7 @@ import AddCustomerModal from './components/AddCustomerModal';
 import CustomerDetailModal from './components/CustomerDetailModal';
 import EditCustomerModal from './components/EditCustomerModal';
 import BirthdayWidget from './components/BirthdayWidget';
+import ReorderWidget from './components/ReorderWidget';
 
 interface Customer {
   id: string;
@@ -83,6 +84,7 @@ export default function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
       <BirthdayWidget customers={customers} />
+      <ReorderWidget customers={customers} />
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Customer Dashboard</h2>
           <p className="text-gray-600">Manage your customers and track relationships</p>
