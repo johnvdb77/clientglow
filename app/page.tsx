@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import PrivacyModal from './dashboard/components/PrivacyModal';
 
 export default function Home() {
   const [email, setEmail] = useState('');
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -124,10 +126,21 @@ export default function Home() {
           </form>
         </div>
 
-        <div className="text-center mt-12 text-gray-500 text-sm">
+        <div className="text-center mt-12 text-gray-500 text-sm space-y-2">
           <p>Built for MLM consultants who care about their customers</p>
+          <button
+            onClick={() => setShowPrivacy(true)}
+            className="text-purple-600 hover:text-purple-800 underline"
+          >
+            Privacy Policy
+          </button>
         </div>
       </div>
+
+      <PrivacyModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
+      />
     </div>
   );
 }
