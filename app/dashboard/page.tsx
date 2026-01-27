@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import AddCustomerModal from './components/AddCustomerModal';
@@ -18,6 +18,7 @@ interface Customer {
   customerSince: string;
   birthday: string;
   lastOrderDate: string;
+  reorderSnoozeUntil?: string;  // Add this line
 }
 
 export default function Dashboard() {
@@ -62,6 +63,23 @@ export default function Dashboard() {
       alert('Failed to delete customer. Please try again.');
     }
   };
+
+  const handleSnoozeReorder = async (customerId: string, days: number) => {
+    try {
+      const snoozeUntil = new Date();
+      snoozeUntil.setDate(snoozeUntil.getDate() + days);
+      
+      const customerRef = doc(db, 'customers', customerId);
+      await updateDoc(customerRef, {
+        reorderSnoozeUntil: snoozeUntil.toISOString(),
+      });
+      
+      fetchCustomers();
+    } catch (error) {
+      console.error('Error snoozing customer:', error);
+      alert('Failed to snooze reminder. Please try again.');
+    }
+  };
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -86,7 +104,7 @@ export default function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
       <BirthdayWidget customers={customers} />
-      <ReorderWidget customers={customers} />
+      <ReorderWidget customers={customers} onSnooze={handleSnoozeReorder} />
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Customer Dashboard</h2>
           <p className="text-gray-600">Manage your customers and track relationships</p>

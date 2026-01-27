@@ -5,13 +5,15 @@ interface Customer {
   name: string;
   email: string;
   lastOrderDate: string;
+  reorderSnoozeUntil?: string;
 }
 
 interface ReorderWidgetProps {
   customers: Customer[];
+  onSnooze: (customerId: string, days: number) => void;
 }
 
-export default function ReorderWidget({ customers }: ReorderWidgetProps) {
+export default function ReorderWidget({ customers, onSnooze }: ReorderWidgetProps) {
   const today = new Date();
   
   const needsReorder = customers
@@ -26,7 +28,17 @@ export default function ReorderWidget({ customers }: ReorderWidgetProps) {
         urgency: daysSince >= 60 ? 'high' : daysSince >= 45 ? 'medium' : 'low'
       };
     })
-    .filter(customer => customer.daysSince >= 30)
+    .filter(customer => {
+      if (customer.daysSince < 30) return false;
+      
+      // Check if snoozed
+      if (customer.reorderSnoozeUntil) {
+        const snoozeDate = new Date(customer.reorderSnoozeUntil);
+        if (snoozeDate > today) return false; // Still snoozed
+      }
+      
+      return true;
+    })
     .sort((a, b) => b.daysSince - a.daysSince);
 
   if (needsReorder.length === 0) {
@@ -71,10 +83,35 @@ export default function ReorderWidget({ customers }: ReorderWidgetProps) {
               <p className="font-medium text-gray-900">{customer.name}</p>
               <p className="text-sm text-gray-600">{customer.email}</p>
             </div>
-            <div className="text-right">
+            <div className="text-right flex items-center gap-2">
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${getUrgencyBadge(customer.urgency)}`}>
                 {customer.daysSince} days ago
               </span>
+              <div className="relative group">
+                <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs font-medium">
+                  ⏰ Snooze
+                </button>
+                <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border hidden group-hover:block z-10 whitespace-nowrap">
+                  <button
+                    onClick={() => onSnooze(customer.id, 7)}
+                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                  >
+                    7 days
+                  </button>
+                  <button
+                    onClick={() => onSnooze(customer.id, 14)}
+                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                  >
+                    14 days
+                  </button>
+                  <button
+                    onClick={() => onSnooze(customer.id, 30)}
+                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                  >
+                    30 days
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         ))}
