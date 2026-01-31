@@ -7,10 +7,13 @@ import PrivacyModal from './dashboard/components/PrivacyModal';
 
 export default function Home() {
   const [email, setEmail] = useState('');
-  const [showPrivacy, setShowPrivacy] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [mlmCompany, setMlmCompany] = useState('');
+  const [showOtherCompany, setShowOtherCompany] = useState(false);
+  const [otherCompany, setOtherCompany] = useState('');
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -18,6 +21,7 @@ export default function Home() {
     try {
       await addDoc(collection(db, 'waitlist'), {
         email: email,
+        mlmCompany: mlmCompany === 'Other' ? otherCompany : mlmCompany,
         createdAt: serverTimestamp(),
       });
       
@@ -104,26 +108,64 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Be the first to know</h2>
           <p className="text-gray-600 mb-6">Join the waitlist and get early access when we launch</p>
           
-          <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-            <div className="flex gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                disabled={loading}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : 'Join Waitlist'}
-              </button>
-            </div>
-          </form>
+          <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-3">
+  <div>
+    <select
+      value={mlmCompany}
+      onChange={(e) => {
+        setMlmCompany(e.target.value);
+        setShowOtherCompany(e.target.value === 'Other');
+      }}
+      required
+      disabled={loading}
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+    >
+      <option value="">Select your MLM company...</option>
+      <option value="LR Health & Beauty">LR Health & Beauty</option>
+      <option value="Glantier">Glantier</option>
+      <option value="Oriflame">Oriflame</option>
+      <option value="Herbalife">Herbalife</option>
+      <option value="Forever Living">Forever Living</option>
+      <option value="Avon">Avon</option>
+      <option value="Tupperware">Tupperware</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+  
+  {showOtherCompany && (
+    <div>
+      <input
+        type="text"
+        value={otherCompany}
+        onChange={(e) => setOtherCompany(e.target.value)}
+        placeholder="Enter your MLM company name"
+        required
+        disabled={loading}
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+      />
+    </div>
+  )}
+  
+  <div>
+    <input
+      type="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      placeholder="Enter your email"
+      required
+      disabled={loading}
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+    />
+  </div>
+  
+  <button
+    type="submit"
+    disabled={loading}
+    className="w-full px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
+  >
+    {loading ? 'Saving...' : 'Join Waitlist'}
+  </button>
+</form>
         </div>
 
         <div className="text-center mt-12 text-gray-500 text-sm space-y-2">
