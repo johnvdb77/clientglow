@@ -1,5 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+import OrderHistory from './OrderHistory';
+import AddOrderModal from './AddOrderModal';
+
 interface CustomerDetailModalProps {
   customer: any;
   isOpen: boolean;
@@ -9,10 +13,11 @@ interface CustomerDetailModalProps {
 }
 
 export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit, onDelete }: CustomerDetailModalProps) {
-  console.log('Modal props:', { onEdit: typeof onEdit, onDelete: typeof onDelete });
+  const [showAddOrder, setShowAddOrder] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   
   if (!isOpen || !customer) return null;
-  
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
@@ -74,28 +79,69 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
             <label className="block text-sm font-medium text-gray-500 mb-1">Remarks</label>
             <p className="text-gray-900 whitespace-pre-wrap">{customer.remarks || '-'}</p>
           </div>
+
+          {customer.tags && customer.tags.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">Tags</label>
+              <div className="flex flex-wrap gap-2">
+                {customer.tags.map((tag: string) => {
+                  const tagColors: Record<string, string> = {
+                    'VIP': 'bg-purple-100 text-purple-800',
+                    'New': 'bg-blue-100 text-blue-800',
+                    'Active': 'bg-green-100 text-green-800',
+                    'Inactive': 'bg-gray-100 text-gray-800',
+                    'Potential': 'bg-yellow-100 text-yellow-800',
+                  };
+                  return (
+                    <span
+                      key={tag}
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${tagColors[tag] || 'bg-gray-100 text-gray-800'}`}
+                    >
+                      {tag}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
+        <OrderHistory 
+          customerId={customer.id} 
+          onAddOrder={() => setShowAddOrder(true)}
+          key={refreshKey}
+        />
+
         <div className="mt-6 flex gap-3">
-  <button
-    onClick={onEdit}
-    className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-  >
-    Edit
-  </button>
-  <button
-    onClick={onDelete}
-    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-  >
-    Delete
-  </button>
-  <button
-    onClick={onClose}
-    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-  >
-    Close
-  </button>
-</div> 
+          <button
+            onClick={onEdit}
+            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            Edit
+          </button>
+          <button
+            onClick={onDelete}
+            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            Delete
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+          >
+            Close
+          </button>
+        </div>
+
+        <AddOrderModal
+          customer={customer}
+          isOpen={showAddOrder}
+          onClose={() => setShowAddOrder(false)}
+          onSuccess={() => {
+            setShowAddOrder(false);
+            setRefreshKey(prev => prev + 1);
+          }}
+        />
       </div>
     </div>
   );

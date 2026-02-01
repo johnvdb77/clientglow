@@ -9,6 +9,7 @@ import CustomerDetailModal from './components/CustomerDetailModal';
 import EditCustomerModal from './components/EditCustomerModal';
 import BirthdayWidget from './components/BirthdayWidget';
 import ReorderWidget from './components/ReorderWidget';
+import PrivacyModal from './components/PrivacyModal';
 
 interface Customer {
   id: string;
@@ -18,7 +19,8 @@ interface Customer {
   customerSince: string;
   birthday: string;
   lastOrderDate: string;
-  reorderSnoozeUntil?: string;  // Add this line
+  reorderSnoozeUntil?: string;
+  tags?: string[];
 }
 
 export default function Dashboard() {
@@ -28,7 +30,8 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-
+  const [selectedTag, setSelectedTag] = useState<string>('');
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const fetchCustomers = async () => {
     try {
       const q = query(collection(db, 'customers'), orderBy('createdAt', 'desc'));
@@ -80,11 +83,17 @@ export default function Dashboard() {
       alert('Failed to snooze reminder. Please try again.');
     }
   };
-  const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (customer.phone && customer.phone.includes(searchTerm))
-  );
+  const filteredCustomers = customers.filter(customer => {
+    // Text search filter
+    const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (customer.phone && customer.phone.includes(searchTerm));
+    
+    // Tag filter
+    const matchesTag = !selectedTag || (customer.tags && customer.tags.includes(selectedTag));
+    
+    return matchesSearch && matchesTag;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,24 +121,80 @@ export default function Dashboard() {
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-6 gap-4">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Search by name, email, or phone..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
-            <div className="text-sm text-gray-600">
-              {filteredCustomers.length} of {customers.length} customers
-            </div>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 whitespace-nowrap"
-            >
-              + Add Customer
-            </button>
+          <div className="space-y-3">
+  <div className="flex items-center gap-4">
+    <div className="flex-1">
+      <input
+        type="text"
+        placeholder="Search by name, email, or phone..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+      />
+    </div>
+    <div className="text-sm text-gray-600">
+      {filteredCustomers.length} of {customers.length} customers
+    </div>
+    <button 
+      onClick={() => setIsModalOpen(true)}
+      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 whitespace-nowrap"
+    >
+      + Add Customer
+    </button>
+  </div>
+  
+  <div className="flex items-center gap-2">
+    <span className="text-sm text-gray-600">Filter by tag:</span>
+    <button
+      onClick={() => setSelectedTag('')}
+      className={`px-3 py-1 rounded-full text-xs font-medium transition ${
+        selectedTag === '' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+      }`}
+    >
+      All
+    </button>
+    <button
+      onClick={() => setSelectedTag('VIP')}
+      className={`px-3 py-1 rounded-full text-xs font-medium transition ${
+        selectedTag === 'VIP' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+      }`}
+    >
+      VIP
+    </button>
+    <button
+      onClick={() => setSelectedTag('New')}
+      className={`px-3 py-1 rounded-full text-xs font-medium transition ${
+        selectedTag === 'New' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+      }`}
+    >
+      New
+    </button>
+    <button
+      onClick={() => setSelectedTag('Active')}
+      className={`px-3 py-1 rounded-full text-xs font-medium transition ${
+        selectedTag === 'Active' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800 hover:bg-green-200'
+      }`}
+    >
+      Active
+    </button>
+    <button
+      onClick={() => setSelectedTag('Inactive')}
+      className={`px-3 py-1 rounded-full text-xs font-medium transition ${
+        selectedTag === 'Inactive' ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+      }`}
+    >
+      Inactive
+    </button>
+    <button
+      onClick={() => setSelectedTag('Potential')}
+      className={`px-3 py-1 rounded-full text-xs font-medium transition ${
+        selectedTag === 'Potential' ? 'bg-yellow-600 text-white' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+      }`}
+    >
+      Potential
+    </button>
+  </div>
+</div>
           </div>
           
           {loading ? (
@@ -192,7 +257,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <AddCustomerModal 
+  {/* All the modals */}
+  <AddCustomerModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchCustomers}
@@ -214,6 +280,11 @@ export default function Dashboard() {
         isOpen={!!editingCustomer}
         onClose={() => setEditingCustomer(null)}
         onSuccess={fetchCustomers}
+      />
+
+      <PrivacyModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
       />
     </div>
   );

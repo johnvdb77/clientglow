@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import CustomerTags from './CustomerTags';
 
 interface EditCustomerModalProps {
   customer: any;
@@ -25,6 +26,7 @@ export default function EditCustomerModal({ customer, isOpen, onClose, onSuccess
     notes: '',
     remarks: '',
     customerSince: '',
+    tags: [],
   });
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function EditCustomerModal({ customer, isOpen, onClose, onSuccess
         notes: customer.notes || '',
         remarks: customer.remarks || '',
         customerSince: customer.customerSince || '',
+        tags: customer.tags || [],
       });
     }
   }, [customer]);
@@ -219,6 +222,16 @@ export default function EditCustomerModal({ customer, isOpen, onClose, onSuccess
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
+          <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Tags
+  </label>
+  <CustomerTags
+    tags={formData.tags}
+    onTagsChange={(tags) => setFormData({ ...formData, tags })}
+    disabled={loading}
+  />
+</div>
 
           <div className="flex gap-3 pt-4">
             <button
