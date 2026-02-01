@@ -5,13 +5,15 @@ import { useMemo } from 'react';
 interface Customer {
   id: string;
   name: string;
-  createdAt: any;
+  createdAt?: any;
 }
 
 interface Order {
   id: string;
   totalAmount: number;
   orderDate: string;
+  customerId?: string;
+  customerName?: string;
 }
 
 interface StatsWidgetProps {
