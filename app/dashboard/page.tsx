@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
@@ -10,7 +11,7 @@ import EditCustomerModal from './components/EditCustomerModal';
 import BirthdayWidget from './components/BirthdayWidget';
 import ReorderWidget from './components/ReorderWidget';
 import PrivacyModal from './components/PrivacyModal';
-
+import StatsWidget from './components/StatsWidget';
 interface Customer {
   id: string;
   name: string;
@@ -24,6 +25,16 @@ interface Customer {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
+  
+  // Check authentication
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('clientglow_auth');
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [router]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +43,7 @@ export default function Dashboard() {
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [orders, setOrders] = useState<any[]>([]);
   const fetchCustomers = async () => {
     try {
       const q = query(collection(db, 'customers'), orderBy('createdAt', 'desc'));
@@ -47,9 +59,26 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
-
+  const fetchAllOrders = async () => {
+    try {
+      const q = query(collection(db, 'orders'), orderBy('orderDate', 'desc'));
+      const snapshot = await getDocs(q);
+      const orderData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        customerId: doc.data().customerId,
+        customerName: doc.data().customerName,
+        totalAmount: doc.data().totalAmount,
+        orderDate: doc.data().orderDate,
+        ...doc.data()
+      }));
+      setOrders(orderData);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
   useEffect(() => {
     fetchCustomers();
+    fetchAllOrders();
   }, []);
   const handleDeleteCustomer = async (customer: Customer) => {
     if (!confirm(`Are you sure you want to delete ${customer.name}? This cannot be undone.`)) {
@@ -108,6 +137,15 @@ export default function Dashboard() {
         >
           📧 Templates
         </Link>
+        <button
+          onClick={() => {
+            localStorage.removeItem('clientglow_auth');
+            router.push('/login');
+          }}
+          className="text-gray-600 hover:text-gray-900"
+        >
+          Logout
+        </button>
         <Link 
           href="/"
           className="text-gray-600 hover:text-gray-900"
@@ -120,6 +158,7 @@ export default function Dashboard() {
 </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+      <StatsWidget customers={customers} orders={orders} />
       <BirthdayWidget customers={customers} />
       <ReorderWidget customers={customers} onSnooze={handleSnoozeReorder} />
         <div className="mb-8">

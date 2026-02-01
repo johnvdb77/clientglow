@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import OrderHistory from './OrderHistory';
 import AddOrderModal from './AddOrderModal';
+import QuickTemplates from './QuickTemplates';
 
 interface CustomerDetailModalProps {
   customer: any;
@@ -15,7 +16,7 @@ interface CustomerDetailModalProps {
 export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit, onDelete }: CustomerDetailModalProps) {
   const [showAddOrder, setShowAddOrder] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  
+  const [showTemplates, setShowTemplates] = useState(false);
   if (!isOpen || !customer) return null;
 
   return (
@@ -112,26 +113,40 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
           key={refreshKey}
         />
 
-        <div className="mt-6 flex gap-3">
-          <button
-            onClick={onEdit}
-            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-          >
-            Edit
-          </button>
-          <button
-            onClick={onDelete}
-            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-          >
-            Delete
-          </button>
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-          >
-            Close
-          </button>
-        </div>
+        <QuickTemplates 
+          customer={customer}
+          isOpen={showTemplates}
+        />
+
+        <div className="mt-6 space-y-3">
+  <button
+    onClick={() => setShowTemplates(!showTemplates)}
+    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+  >
+    📧 Send Email
+  </button>
+  
+  <div className="flex gap-3">
+    <button
+      onClick={onEdit}
+      className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+    >
+      Edit
+    </button>
+    <button
+      onClick={onDelete}
+      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+    >
+      Delete
+    </button>
+    <button
+      onClick={onClose}
+      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+    >
+      Close
+    </button>
+  </div>
+</div>
 
         <AddOrderModal
           customer={customer}
