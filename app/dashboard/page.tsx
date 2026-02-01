@@ -98,18 +98,26 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-purple-600">ClientGlow</h1>
-            <Link 
-              href="/"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              ← Back to Home
-            </Link>
-          </div>
-        </div>
-      </nav>
+  <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="flex items-center justify-between">
+      <h1 className="text-2xl font-bold text-purple-600">ClientGlow</h1>
+      <div className="flex items-center gap-4">
+        <Link 
+          href="/dashboard/templates"
+          className="text-purple-600 hover:text-purple-800 font-medium"
+        >
+          📧 Templates
+        </Link>
+        <Link 
+          href="/"
+          className="text-gray-600 hover:text-gray-900"
+        >
+          ← Back to Home
+        </Link>
+      </div>
+    </div>
+  </div>
+</nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
       <BirthdayWidget customers={customers} />

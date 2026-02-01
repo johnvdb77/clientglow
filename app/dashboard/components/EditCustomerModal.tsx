@@ -26,7 +26,7 @@ export default function EditCustomerModal({ customer, isOpen, onClose, onSuccess
     notes: '',
     remarks: '',
     customerSince: '',
-    tags: [],
+    tags: [] as string[],
   });
 
   useEffect(() => {

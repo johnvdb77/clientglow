@@ -25,7 +25,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
     notes: '',
     remarks: '',
     customerSince: '',
-    tags: [],
+    tags: [] as string[],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,6 +55,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
         notes: '',
         remarks: '',
         customerSince: '',
+        tags: [],
       });
     } catch (error) {
       console.error('Error adding customer:', error);
