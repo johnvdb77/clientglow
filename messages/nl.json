@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "title": "ClientGlow",
+    "templates": "Sjablonen",
+    "logout": "Uitloggen",
+    "backToHome": "Terug naar Home"
+  },
+  "dashboard": {
+    "title": "Klanten Dashboard",
+    "subtitle": "Beheer je klanten en volg relaties",
+    "addCustomer": "Klant Toevoegen",
+    "search": "Zoek op naam, email of telefoon...",
+    "filterByTag": "Filter op label:",
+    "all": "Alle",
+    "customers": "klanten",
+    "of": "van"
+  },
+  "stats": {
+    "totalRevenue": "Totale Omzet",
+    "thisMonth": "Deze Maand",
+    "customers": "Klanten",
+    "topCustomer": "Top Klant",
+    "allTime": "Alle tijden",
+    "vsLastMonth": "vs vorige maand",
+    "thisMonthNew": "deze maand",
+    "noOrders": "Nog geen bestellingen"
+  },
+  "birthday": {
+    "title": "Aankomende Verjaardagen",
+    "today": "Vandaag!",
+    "inDays": "over",
+    "day": "dag",
+    "days": "dagen"
+  },
+  "reorder": {
+    "title": " Herinneringen opnieuw bestellen",
+    "customerNeeds": "klant heeft",
+    "customersNeed": "klanten hebben",
+    "followUp": "follow-up nodig",
+    "snooze": "Snooze",
+    "daysAgo": "dagen geleden"
+  },
+  "customer": {
+    "name": "Naam",
+    "email": "Email",
+    "phone": "Telefoon",
+    "birthday": "Verjaardag",
+    "customerSince": "Klant Sinds",
+    "lastOrderDate": "Laatste Besteldatum",
+    "address": "Adres",
+    "specialDays": "Speciale Dagen",
+    "preferences": "Voorkeuren",
+    "notes": "Notities",
+    "remarks": "Opmerkingen",
+    "tags": "Labels"
+  },
+  "tags": {
+    "vip": "VIP",
+    "new": "Nieuw",
+    "active": "Actief",
+    "inactive": "Inactief",
+    "potential": "Potentieel"
+  },
+  "actions": {
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "sendEmail": "Email Versturen",
+    "addOrder": "Bestelling Toevoegen"
+  },
+  "orderHistory": {
+    "title": "Bestelgeschiedenis",
+    "addOrder": "Bestelling Toevoegen",
+    "totalRevenue": "Totale Omzet",
+    "totalOrders": "Totaal Bestellingen",
+    "noOrders": "Nog geen bestellingen",
+    "addFirst": "Voeg eerste bestelling toe",
+    "paid": "Betaald",
+    "pending": "In afwachting",
+    "refunded": "Terugbetaald"
+  },
+  "emailTemplates": {
+    "quickTemplates": "Snelle Email Sjablonen",
+    "birthday": "🎂 Verjaardag",
+    "reorder": "🔔 Herinnering bestelling",
+    "thankyou": "🙏 Bedankt",
+    "checkin": "👋 Check-in",
+    "copy": "Kopiëren",
+    "send": "Versturen"
+  },
+  "order": {
+    "addOrder": "Bestelling Toevoegen",
+    "for": "voor",
+    "addProducts": "Producten Toevoegen",
+    "productName": "Productnaam",
+    "quantity": "Aantal",
+    "price": "Prijs €",
+    "add": "Toevoegen",
+    "orderItems": "Bestelde artikelen",
+    "remove": "Verwijderen",
+    "totalAmount": "Totaalbedrag",
+    "orderDate": "Besteldatum",
+    "paymentStatus": "Betalingsstatus",
+    "notes": "Notities (samples, kortingen, etc.)",
+    "notesPlaceholder": "bijv., 2 gratis samples bijgevoegd, 10% korting toegepast",
+    "productPlaceholder": "Productnaam (bijv., Aloe Vera Gel)",
+    "items": "artikelen"
+  },
+  "actions": {
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "sendEmail": "Email Versturen",
+    "addOrder": "Bestelling Toevoegen",
+    "actions": "Acties"
+  }
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 interface Customer {
@@ -22,6 +23,8 @@ interface StatsWidgetProps {
 }
 
 export default function StatsWidget({ customers, orders }: StatsWidgetProps) {
+  const t = useTranslations();
+  
   const stats = useMemo(() => {
     const now = new Date();
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -86,42 +89,42 @@ export default function StatsWidget({ customers, orders }: StatsWidgetProps) {
     <div className="grid md:grid-cols-4 gap-4 mb-6">
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-gray-600">Total Revenue</p>
+          <p className="text-sm text-gray-600">{t('stats.totalRevenue')}</p>
           <span className="text-2xl">💰</span>
         </div>
         <p className="text-3xl font-bold text-gray-900">€{stats.totalRevenue.toFixed(2)}</p>
-        <p className="text-sm text-gray-500 mt-1">All time</p>
+        <p className="text-sm text-gray-500 mt-1">{t('stats.allTime')}</p>
       </div>
-
+  
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-gray-600">This Month</p>
+          <p className="text-sm text-gray-600">{t('stats.thisMonth')}</p>
           <span className="text-2xl">📈</span>
         </div>
         <p className="text-3xl font-bold text-gray-900">€{stats.revenueThisMonth.toFixed(2)}</p>
         {stats.growth !== 0 && (
           <p className={`text-sm mt-1 ${stats.growth > 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {stats.growth > 0 ? '↑' : '↓'} {Math.abs(stats.growth).toFixed(1)}% vs last month
+            {stats.growth > 0 ? '↑' : '↓'} {Math.abs(stats.growth).toFixed(1)}% {t('stats.vsLastMonth')}
           </p>
         )}
       </div>
-
+  
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-gray-600">Customers</p>
+          <p className="text-sm text-gray-600">{t('stats.customers')}</p>
           <span className="text-2xl">👥</span>
         </div>
         <p className="text-3xl font-bold text-gray-900">{stats.totalCustomers}</p>
         {stats.newCustomersThisMonth > 0 && (
           <p className="text-sm text-green-600 mt-1">
-            +{stats.newCustomersThisMonth} this month
+            +{stats.newCustomersThisMonth} {t('stats.thisMonthNew')}
           </p>
         )}
       </div>
-
+  
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-gray-600">Top Customer</p>
+          <p className="text-sm text-gray-600">{t('stats.topCustomer')}</p>
           <span className="text-2xl">⭐</span>
         </div>
         {stats.topCustomer ? (
@@ -130,7 +133,7 @@ export default function StatsWidget({ customers, orders }: StatsWidgetProps) {
             <p className="text-sm text-gray-600 mt-1">€{stats.topCustomer.total.toFixed(2)}</p>
           </>
         ) : (
-          <p className="text-sm text-gray-500">No orders yet</p>
+          <p className="text-sm text-gray-500">{t('stats.noOrders')}</p>
         )}
       </div>
     </div>

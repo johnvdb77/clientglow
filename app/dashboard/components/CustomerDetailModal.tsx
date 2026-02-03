@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import OrderHistory from './OrderHistory';
 import AddOrderModal from './AddOrderModal';
@@ -17,6 +18,7 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
   const [showAddOrder, setShowAddOrder] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [showTemplates, setShowTemplates] = useState(false);
+  const t = useTranslations();
   if (!isOpen || !customer) return null;
 
   return (
@@ -35,55 +37,55 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
         <div className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-              <p className="text-gray-900">{customer.email}</p>
+            <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.email')}</label>
+            <p className="text-gray-900">{customer.email}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
-              <p className="text-gray-900">{customer.phone || '-'}</p>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.phone')}</label>
+              <p className="text-gray-900">{customer.phone}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Birthday</label>
-              <p className="text-gray-900">{customer.birthday || '-'}</p>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.birthday')}</label>
+              <p className="text-gray-900">{customer.birthday}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Customer Since</label>
-              <p className="text-gray-900">{customer.customerSince || '-'}</p>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.customerSince')}</label>
+              <p className="text-gray-900">{customer.customerSince}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Last Order Date</label>
-              <p className="text-gray-900">{customer.lastOrderDate || '-'}</p>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.lastOrderDate')}</label>
+              <p className="text-gray-900">{customer.lastOrderDate}</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">Address</label>
-            <p className="text-gray-900">{customer.address || '-'}</p>
+            <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.address')}</label>
+            <p className="text-gray-900">{customer.address}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">Special Days</label>
-            <p className="text-gray-900">{customer.specialDays || '-'}</p>
+            <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.specialDays')}</label>
+            <p className="text-gray-900">{customer.specialDays}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">Preferences</label>
-            <p className="text-gray-900">{customer.preferences || '-'}</p>
+            <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.preferences')}</label>
+            <p className="text-gray-900">{customer.preferences}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">Notes</label>
-            <p className="text-gray-900 whitespace-pre-wrap">{customer.notes || '-'}</p>
+            <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.notes')}</label>
+            <p className="text-gray-900 whitespace-pre-wrap">{customer.notes}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">Remarks</label>
-            <p className="text-gray-900 whitespace-pre-wrap">{customer.remarks || '-'}</p>
+            <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.remarks')}</label>
+            <p className="text-gray-900 whitespace-pre-wrap">{customer.remarks}</p>
           </div>
 
           {customer.tags && customer.tags.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Tags</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('customer.tags')}</label>
               <div className="flex flex-wrap gap-2">
                 {customer.tags.map((tag: string) => {
                   const tagColors: Record<string, string> = {
@@ -108,22 +110,22 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
         </div>
 
         <OrderHistory 
-          customerId={customer.id} 
-          onAddOrder={() => setShowAddOrder(true)}
-          key={refreshKey}
-        />
+  customerId={customer.id} 
+  onAddOrder={() => setShowAddOrder(true)}
+  key={refreshKey}
+/>
 
-        <QuickTemplates 
-          customer={customer}
-          isOpen={showTemplates}
-        />
+<QuickTemplates 
+  customer={customer}
+  isOpen={showTemplates}
+/>
 
-        <div className="mt-6 space-y-3">
+<div className="mt-6 space-y-3">
   <button
     onClick={() => setShowTemplates(!showTemplates)}
     className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
   >
-    📧 Send Email
+    📧 {t('actions.sendEmail')}
   </button>
   
   <div className="flex gap-3">
@@ -131,33 +133,33 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
       onClick={onEdit}
       className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
     >
-      Edit
+      {t('actions.edit')}
     </button>
     <button
       onClick={onDelete}
       className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
     >
-      Delete
+      {t('actions.delete')}
     </button>
     <button
       onClick={onClose}
       className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
     >
-      Close
+      {t('actions.close')}
     </button>
   </div>
 </div>
 
-        <AddOrderModal
-          customer={customer}
-          isOpen={showAddOrder}
-          onClose={() => setShowAddOrder(false)}
-          onSuccess={() => {
-            setShowAddOrder(false);
-            setRefreshKey(prev => prev + 1);
-          }}
+<AddOrderModal
+        customer={customer}
+        isOpen={showAddOrder}
+        onClose={() => setShowAddOrder(false)}
+        onSuccess={() => {
+          setShowAddOrder(false);
+          setRefreshKey(prev => prev + 1);
+        }}
         />
+        </div>
       </div>
-    </div>
-  );
+    );
 }

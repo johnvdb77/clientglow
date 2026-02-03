@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 interface Customer {
   id: string;
   name: string;
@@ -14,6 +16,7 @@ interface ReorderWidgetProps {
 }
 
 export default function ReorderWidget({ customers, onSnooze }: ReorderWidgetProps) {
+  const t = useTranslations();
   const today = new Date();
   
   const needsReorder = customers
@@ -66,10 +69,10 @@ export default function ReorderWidget({ customers, onSnooze }: ReorderWidgetProp
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <span className="text-2xl mr-2">🔔</span>
-          <h3 className="text-xl font-semibold">Reorder Reminders</h3>
+          <h3 className="text-xl font-semibold">{t('reorder.title')}</h3>
         </div>
         <span className="text-sm text-gray-600">
-          {needsReorder.length} {needsReorder.length === 1 ? 'customer needs' : 'customers need'} follow-up
+          {needsReorder.length} {needsReorder.length === 1 ? t('reorder.customerNeeds') : t('reorder.customersNeed')} {t('reorder.followUp')}
         </span>
       </div>
       
@@ -85,11 +88,11 @@ export default function ReorderWidget({ customers, onSnooze }: ReorderWidgetProp
             </div>
             <div className="text-right flex items-center gap-2">
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${getUrgencyBadge(customer.urgency)}`}>
-                {customer.daysSince} days ago
+                {customer.daysSince} {t('reorder.daysAgo')}
               </span>
               <div className="relative group">
                 <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs font-medium">
-                  ⏰ Snooze
+                  ⏰ {t('reorder.snooze')}
                 </button>
                 <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border hidden group-hover:block z-10 whitespace-nowrap">
                   <button

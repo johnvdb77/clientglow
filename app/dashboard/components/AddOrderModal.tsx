@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -19,6 +20,7 @@ interface AddOrderModalProps {
 }
 
 export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: AddOrderModalProps) {
+  const t = useTranslations();
   const [loading, setLoading] = useState(false);
   const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
   const [paymentStatus, setPaymentStatus] = useState('paid');
@@ -115,8 +117,9 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold">Add Order</h2>
-            <p className="text-sm text-gray-600">for {customer.name}</p>
+          <h2 className="text-2xl font-bold">{t('order.addOrder')}</h2>
+          <p className="text-sm text-gray-600">{t('order.for')} {customer.name}</p>
+          <h3 className="font-semibold text-gray-900 mb-3">{t('order.addProducts')}</h3>
           </div>
           <button
             onClick={onClose}
@@ -133,13 +136,13 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
             
             <div className="space-y-3">
               <div>
-                <input
-                  type="text"
-                  value={currentProduct.productName}
-                  onChange={(e) => setCurrentProduct({ ...currentProduct, productName: e.target.value })}
-                  placeholder="Product name (e.g., Aloe Vera Gel)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
+              <input
+  type="text"
+  value={currentProduct.productName}
+  onChange={(e) => setCurrentProduct({ ...currentProduct, productName: e.target.value })}
+  placeholder={t('order.productPlaceholder')}
+  className="..."
+/>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -149,7 +152,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
                     min="1"
                     value={currentProduct.quantity}
                     onChange={(e) => setCurrentProduct({ ...currentProduct, quantity: e.target.value })}
-                    placeholder="Qty"
+                    placeholder={t('order.quantity')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -160,17 +163,17 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
                     step="0.01"
                     value={currentProduct.price}
                     onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
-                    placeholder="Price €"
+                    placeholder={t('order.price')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
                 <button
-                  type="button"
-                  onClick={addLineItem}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
-                >
-                  + Add
-                </button>
+  type="button"
+  onClick={addLineItem}
+  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+>
+  + {t('order.add')}
+</button>
               </div>
             </div>
           </div>
@@ -178,7 +181,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
           {/* Order Items List */}
           {lineItems.length > 0 && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">Order Items</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('order.orderItems')}</h3>
               <div className="space-y-2">
                 {lineItems.map((item, index) => (
                   <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
@@ -193,7 +196,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
                       onClick={() => removeLineItem(index)}
                       className="text-red-600 hover:text-red-800 ml-4"
                     >
-                      Remove
+                      {t('order.remove')}
                     </button>
                   </div>
                 ))}
@@ -202,7 +205,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
               <div className="mt-4 bg-purple-50 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-gray-900">Total Amount:</span>
-                  <span className="text-2xl font-bold text-purple-600">€{totalAmount.toFixed(2)}</span>
+                  <span className="font-semibold text-gray-900">{t('order.totalAmount')}:</span>
                 </div>
               </div>
             </div>
@@ -212,7 +215,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Order Date *
+              {t('order.orderDate')} *
               </label>
               <input
                 type="date"
@@ -225,31 +228,31 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Payment Status *
+              {t('order.paymentStatus')} *
               </label>
               <select
                 value={paymentStatus}
                 onChange={(e) => setPaymentStatus(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                <option value="paid">Paid</option>
-                <option value="pending">Pending</option>
-                <option value="refunded">Refunded</option>
+                <option value="paid">{t('orderHistory.paid')}</option>
+<option value="pending">{t('orderHistory.pending')}</option>
+<option value="refunded">{t('orderHistory.refunded')}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes (samples, discounts, etc.)
+            {t('order.notes')}
             </label>
             <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={2}
-              placeholder="e.g., Included 2 free samples, 10% discount applied"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
+  value={notes}
+  onChange={(e) => setNotes(e.target.value)}
+  rows={2}
+  placeholder={t('order.notesPlaceholder')}
+  className="..."
+/>
           </div>
 
           <div className="flex gap-3 pt-4 border-t">
@@ -258,14 +261,14 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {t('actions.cancel')}
             </button>
             <button
               type="submit"
               disabled={loading || lineItems.length === 0}
               className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
             >
-              {loading ? 'Adding...' : `Add Order (${lineItems.length} items)`}
+              {loading ? 'Adding...' : `${t('order.addOrder')} (${lineItems.length} ${t('order.items')})`}
             </button>
           </div>
         </form>

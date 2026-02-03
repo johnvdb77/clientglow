@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "title": "ClientGlow",
+    "templates": "Templates",
+    "logout": "Logout",
+    "backToHome": "Back to Home"
+  },
+  "dashboard": {
+    "title": "Customer Dashboard",
+    "subtitle": "Manage your customers and track relationships",
+    "addCustomer": "Add Customer",
+    "search": "Search by name, email, or phone...",
+    "filterByTag": "Filter by tag:",
+    "all": "All",
+    "customers": "customers",
+    "of": "of"
+  },
+  "stats": {
+    "totalRevenue": "Total Revenue",
+    "thisMonth": "This Month",
+    "customers": "Customers",
+    "topCustomer": "Top Customer",
+    "allTime": "All time",
+    "vsLastMonth": "vs last month",
+    "thisMonthNew": "this month",
+    "noOrders": "No orders yet"
+  },
+  "birthday": {
+    "title": "Upcoming Birthdays",
+    "today": "Today!",
+    "inDays": "in",
+    "day": "day",
+    "days": "days"
+  },
+  "reorder": {
+    "title": "Reorder Reminders",
+    "customerNeeds": "customer needs",
+    "customersNeed": "customers need",
+    "followUp": "follow-up",
+    "snooze": "Snooze",
+    "daysAgo": "days ago"
+  },
+  "customer": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "birthday": "Birthday",
+    "customerSince": "Customer Since",
+    "lastOrderDate": "Last Order Date",
+    "address": "Address",
+    "specialDays": "Special Days",
+    "preferences": "Preferences",
+    "notes": "Notes",
+    "remarks": "Remarks",
+    "tags": "Tags"
+  },
+  "tags": {
+    "vip": "VIP",
+    "new": "New",
+    "active": "Active",
+    "inactive": "Inactive",
+    "potential": "Potential"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "sendEmail": "Send Email",
+    "addOrder": "Add Order"
+  },
+  "orderHistory": {
+    "title": "Order History",
+    "addOrder": "Add Order",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "noOrders": "No orders yet",
+    "addFirst": "Add first order",
+    "paid": "Paid",
+    "pending": "Pending",
+    "refunded": "Refunded"
+  },
+  "emailTemplates": {
+    "quickTemplates": "Quick Email Templates",
+    "birthday": "Birthday",
+    "reorder": "Reorder Reminder",
+    "thankyou": "Thank You",
+    "checkin": "Check In",
+    "copy": "Copy",
+    "send": "Send"
+  },
+  "order": {
+    "addOrder": "Add Order",
+    "for": "for",
+    "addProducts": "Add Products",
+    "productName": "Product name",
+    "quantity": "Qty",
+    "price": "Price €",
+    "add": "Add",
+    "orderItems": "Order Items",
+    "remove": "Remove",
+    "totalAmount": "Total Amount",
+    "orderDate": "Order Date",
+    "paymentStatus": "Payment Status",
+    "notes": "Notes (samples, discounts, etc.)",
+    "notesPlaceholder": "e.g., Included 2 free samples, 10% discount applied",
+    "productPlaceholder": "Product name (e.g., Aloe Vera Gel)",
+    "items": "items"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "sendEmail": "Send Email",
+    "addOrder": "Add Order",
+    "actions": "Actions"
+  }
+}

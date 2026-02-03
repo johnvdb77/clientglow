@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -30,6 +31,7 @@ interface OrderHistoryProps {
 }
 
 export default function OrderHistory({ customerId, onAddOrder }: OrderHistoryProps) {
+  const t = useTranslations();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -71,40 +73,40 @@ export default function OrderHistory({ customerId, onAddOrder }: OrderHistoryPro
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Order History</h3>
-        <button
-          onClick={onAddOrder}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium"
-        >
-          + Add Order
-        </button>
-      </div>
+  <div className="flex items-center justify-between mb-4">
+    <h3 className="text-lg font-semibold text-gray-900">{t('orderHistory.title')}</h3>
+    <button
+      onClick={onAddOrder}
+      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium"
+    >
+      + {t('orderHistory.addOrder')}
+    </button>
+  </div>
 
-      {loading ? (
-        <p className="text-gray-500 text-sm">Loading orders...</p>
-      ) : orders.length === 0 ? (
-        <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 mb-2">No orders yet</p>
-          <button
-            onClick={onAddOrder}
-            className="text-purple-600 hover:text-purple-800 text-sm font-medium"
-          >
-            Add first order →
-          </button>
+  {loading ? (
+    <p className="text-gray-500 text-sm">Loading orders...</p>
+  ) : orders.length === 0 ? (
+    <div className="text-center py-8 bg-gray-50 rounded-lg">
+      <p className="text-gray-500 mb-2">{t('orderHistory.noOrders')}</p>
+      <button
+        onClick={onAddOrder}
+        className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+      >
+        {t('orderHistory.addFirst')} →
+      </button>
+    </div>
+  ) : (
+    <>
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="bg-purple-50 p-4 rounded-lg">
+          <p className="text-sm text-gray-600">{t('orderHistory.totalRevenue')}</p>
+          <p className="text-2xl font-bold text-purple-600">€{totalRevenue.toFixed(2)}</p>
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-purple-600">€{totalRevenue.toFixed(2)}</p>
-            </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-blue-600">{totalOrders}</p>
-            </div>
-          </div>
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <p className="text-sm text-gray-600">{t('orderHistory.totalOrders')}</p>
+          <p className="text-2xl font-bold text-blue-600">{totalOrders}</p>
+        </div>
+      </div>
 
           <div className="space-y-3">
             {orders.map((order) => (
@@ -120,8 +122,8 @@ export default function OrderHistory({ customerId, onAddOrder }: OrderHistoryPro
                         })}
                       </span>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(order.paymentStatus)}`}>
-                        {order.paymentStatus}
-                      </span>
+  {t(`orderHistory.${order.paymentStatus}`)}
+</span>
                     </div>
                     
                     {/* Show line items for new multi-product orders */}

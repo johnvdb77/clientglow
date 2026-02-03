@@ -1,5 +1,6 @@
 'use client';
-
+import LanguageSwitcher from './components/LanguageSwitcher';
+import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
@@ -26,7 +27,7 @@ interface Customer {
 
 export default function Dashboard() {
   const router = useRouter();
-  
+  const t = useTranslations();
   // Check authentication
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('clientglow_auth');
@@ -124,18 +125,19 @@ export default function Dashboard() {
     return matchesSearch && matchesTag;
   });
 
-  return (
+  return ( 
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b">
+ <nav className="bg-white border-b">
   <div className="max-w-7xl mx-auto px-4 py-4">
     <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold text-purple-600">ClientGlow</h1>
+      <h1 className="text-2xl font-bold text-purple-600">{t('nav.title')}</h1>
       <div className="flex items-center gap-4">
+        <LanguageSwitcher />
         <Link 
           href="/dashboard/templates"
           className="text-purple-600 hover:text-purple-800 font-medium"
         >
-          📧 Templates
+          📧 {t('nav.templates')}
         </Link>
         <button
           onClick={() => {
@@ -144,13 +146,13 @@ export default function Dashboard() {
           }}
           className="text-gray-600 hover:text-gray-900"
         >
-          Logout
+          {t('nav.logout')}
         </button>
         <Link 
           href="/"
           className="text-gray-600 hover:text-gray-900"
         >
-          ← Back to Home
+          ← {t('nav.backToHome')}
         </Link>
       </div>
     </div>
@@ -161,10 +163,10 @@ export default function Dashboard() {
       <StatsWidget customers={customers} orders={orders} />
       <BirthdayWidget customers={customers} />
       <ReorderWidget customers={customers} onSnooze={handleSnoozeReorder} />
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Customer Dashboard</h2>
-          <p className="text-gray-600">Manage your customers and track relationships</p>
-        </div>
+      <div className="mb-8">
+  <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h2>
+  <p className="text-gray-600">{t('dashboard.subtitle')}</p>
+</div>
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-6 gap-4">
@@ -173,32 +175,32 @@ export default function Dashboard() {
     <div className="flex-1">
       <input
         type="text"
-        placeholder="Search by name, email, or phone..."
+        placeholder={t('dashboard.search')}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
       />
     </div>
     <div className="text-sm text-gray-600">
-      {filteredCustomers.length} of {customers.length} customers
+      {filteredCustomers.length} {t('dashboard.of')} {customers.length} {t('dashboard.customers')}
     </div>
     <button 
       onClick={() => setIsModalOpen(true)}
       className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 whitespace-nowrap"
     >
-      + Add Customer
+      + {t('dashboard.addCustomer')}
     </button>
   </div>
   
   <div className="flex items-center gap-2">
-    <span className="text-sm text-gray-600">Filter by tag:</span>
+    <span className="text-sm text-gray-600">{t('dashboard.filterByTag')}</span>
     <button
       onClick={() => setSelectedTag('')}
       className={`px-3 py-1 rounded-full text-xs font-medium transition ${
         selectedTag === '' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
       }`}
     >
-      All
+      {t('dashboard.all')}
     </button>
     <button
       onClick={() => setSelectedTag('VIP')}
@@ -253,14 +255,15 @@ export default function Dashboard() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Phone</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Customer Since</th>
-                  </tr>
-                </thead>
+              <thead className="bg-gray-50">
+  <tr>
+    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{t('customer.name')}</th>
+    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{t('customer.email')}</th>
+    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{t('customer.phone')}</th>
+    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{t('customer.customerSince')}</th>
+    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{t('actions.actions')}</th>
+  </tr>
+</thead>
                 <tbody className="divide-y divide-gray-200">
   {filteredCustomers.map((customer) => (
     <tr key={customer.id} className="hover:bg-gray-50">

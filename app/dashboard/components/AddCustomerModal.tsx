@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -12,6 +13,7 @@ interface AddCustomerModalProps {
 }
 
 export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCustomerModalProps) {
+  const t = useTranslations();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -71,7 +73,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Add New Customer</h2>
+        <h2 className="text-2xl font-bold">{t('dashboard.addCustomer')}</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -84,7 +86,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name *
+              {t('customer.name')} *
               </label>
               <input
                 type="text"
@@ -97,7 +99,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email *
+              {t('customer.email')} *
               </label>
               <input
                 type="email"
@@ -110,7 +112,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
+              {t('customer.phone')}
               </label>
               <input
                 type="tel"
@@ -122,7 +124,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Birthday
+              {t('customer.birthday')}
               </label>
               <input
                 type="date"
@@ -134,7 +136,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Customer Since
+              {t('customer.customerSince')}
               </label>
               <input
                 type="date"
@@ -146,7 +148,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Last Order Date
+              {t('customer.lastOrderDate')}
               </label>
               <input
                 type="date"
@@ -159,7 +161,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Address
+            {t('customer.address')}
             </label>
             <input
               type="text"
@@ -171,7 +173,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Special Days (e.g., Anniversary)
+            {t('customer.specialDays')} (e.g., Anniversary)
             </label>
             <input
               type="text"
@@ -184,7 +186,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Preferences
+            {t('customer.preferences')}
             </label>
             <input
               type="text"
@@ -197,7 +199,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes
+            {t('customer.notes')}
             </label>
             <textarea
               value={formData.notes}
@@ -210,7 +212,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Remarks
+            {t('customer.remarks')}
             </label>
             <textarea
               value={formData.remarks}
@@ -223,7 +225,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
 
           <div>
   <label className="block text-sm font-medium text-gray-700 mb-1">
-    Tags
+  {t('customer.tags')}
   </label>
   <CustomerTags
     tags={formData.tags}
@@ -238,14 +240,14 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {t('actions.cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
             >
-              {loading ? 'Adding...' : 'Add Customer'}
+              {loading ? 'Adding...' : t('dashboard.addCustomer')}
             </button>
           </div>
         </form>

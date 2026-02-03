@@ -1,14 +1,16 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import { useState, useEffect } from 'react';
+
 interface QuickTemplatesProps {
   customer: any;
   isOpen: boolean;
 }
 
-const QUICK_TEMPLATES = [
+const QUICK_TEMPLATES_EN = [
   {
     id: 'birthday',
-    name: '🎂 Birthday',
     subject: 'Happy Birthday {{name}}! 🎉',
     body: `Dear {{name}},
 
@@ -23,7 +25,6 @@ Warm wishes,
   },
   {
     id: 'reorder',
-    name: '🔔 Reorder Reminder',
     subject: 'Time for a refill, {{name}}?',
     body: `Hi {{name}},
 
@@ -38,7 +39,6 @@ Best regards,
   },
   {
     id: 'thankyou',
-    name: '🙏 Thank You',
     subject: 'Thank you {{name}}!',
     body: `Dear {{name}},
 
@@ -51,7 +51,6 @@ With gratitude,
   },
   {
     id: 'checkin',
-    name: '👋 Check In',
     subject: 'Just checking in, {{name}}',
     body: `Hi {{name}},
 
@@ -66,8 +65,75 @@ Best,
   },
 ];
 
+const QUICK_TEMPLATES_NL = [
+  {
+    id: 'birthday',
+    subject: 'Gefeliciteerd {{name}}! 🎉',
+    body: `Beste {{name}},
+
+Van harte gefeliciteerd met je verjaardag! 🎂
+
+Ik hoop dat je een geweldige dag hebt vol vreugde en geluk. Om dit te vieren, wil ik je graag een speciale verjaardagskorting aanbieden op je volgende bestelling.
+
+Bedankt dat je zo'n geweldige klant bent!
+
+Hartelijke groeten,
+[Jouw Naam]`,
+  },
+  {
+    id: 'reorder',
+    subject: 'Tijd voor een nieuwe bestelling, {{name}}?',
+    body: `Hoi {{name}},
+
+Het is alweer even geleden sinds je laatste bestelling. Misschien ben je binnenkort door je voorraad heen!
+
+Zal ik je gebruikelijke bestelling voor je reserveren? Laat het me weten, dan zorg ik ervoor dat je niet zonder komt te zitten.
+
+Ik hoor graag van je!
+
+Vriendelijke groeten,
+[Jouw Naam]`,
+  },
+  {
+    id: 'thankyou',
+    subject: 'Bedankt {{name}}!',
+    body: `Beste {{name}},
+
+Hartelijk dank voor je blijvende steun! Ik waardeer het enorm dat je klant bij mij bent.
+
+Als je ooit iets nodig hebt of vragen hebt, aarzel dan niet om contact op te nemen.
+
+Met dank,
+[Jouw Naam]`,
+  },
+  {
+    id: 'checkin',
+    subject: 'Even bijpraten, {{name}}',
+    body: `Hoi {{name}},
+
+Ik wilde even contact met je opnemen om te horen hoe het met je gaat! Het is alweer een tijdje geleden dat we elkaar spraken.
+
+Kan ik ergens mee helpen? Zijn er producten die je graag zou willen proberen of vragen die ik kan beantwoorden?
+
+Ik hoor graag van je!
+
+Groetjes,
+[Jouw Naam]`,
+  },
+];
+
 export default function QuickTemplates({ customer, isOpen }: QuickTemplatesProps) {
+  const t = useTranslations();
+  const [locale, setLocale] = useState('en');
+
+  useEffect(() => {
+    const savedLocale = localStorage.getItem('clientglow_locale') || 'en';
+    setLocale(savedLocale);
+  }, []);
+  
   if (!isOpen) return null;
+
+  const QUICK_TEMPLATES = locale === 'nl' ? QUICK_TEMPLATES_NL : QUICK_TEMPLATES_EN;
 
   const fillTemplate = (text: string) => {
     return text.replace(/{{name}}/g, customer.name);
@@ -91,23 +157,23 @@ export default function QuickTemplates({ customer, isOpen }: QuickTemplatesProps
 
   return (
     <div className="mt-4 border-t pt-4">
-      <h4 className="font-semibold text-gray-900 mb-3">Quick Email Templates</h4>
+      <h4 className="font-semibold text-gray-900 mb-3">{t('emailTemplates.quickTemplates')}</h4>
       <div className="grid grid-cols-2 gap-2">
         {QUICK_TEMPLATES.map((template) => (
           <div key={template.id} className="border rounded-lg p-3 hover:bg-gray-50">
-            <p className="font-medium text-sm text-gray-900 mb-2">{template.name}</p>
+            <p className="font-medium text-sm text-gray-900 mb-2">{t(`emailTemplates.${template.id}`)}</p>
             <div className="flex gap-2">
               <button
                 onClick={() => copyTemplate(template)}
                 className="flex-1 px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200"
               >
-                Copy
+                {t('emailTemplates.copy')}
               </button>
               <button
                 onClick={() => openInEmail(template)}
                 className="flex-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200"
               >
-                Send
+                {t('emailTemplates.send')}
               </button>
             </div>
           </div>

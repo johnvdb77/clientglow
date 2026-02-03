@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 interface Customer {
   id: string;
   name: string;
@@ -11,6 +13,7 @@ interface BirthdayWidgetProps {
 }
 
 export default function BirthdayWidget({ customers }: BirthdayWidgetProps) {
+  const t = useTranslations();
   const today = new Date();
   const upcomingBirthdays = customers
     .filter(customer => customer.birthday)
@@ -40,7 +43,7 @@ export default function BirthdayWidget({ customers }: BirthdayWidgetProps) {
     <div className="bg-white rounded-lg shadow p-6 mb-6">
       <div className="flex items-center mb-4">
         <span className="text-2xl mr-2">🎂</span>
-        <h3 className="text-xl font-semibold">Upcoming Birthdays</h3>
+        <h3 className="text-xl font-semibold">{t('birthday.title')}</h3>
       </div>
       
       <div className="space-y-3">
@@ -54,17 +57,17 @@ export default function BirthdayWidget({ customers }: BirthdayWidgetProps) {
             <div>
               <p className="font-medium text-gray-900">{customer.name}</p>
               <p className="text-sm text-gray-600">
-                {new Date(customer.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                {new Date(customer.birthday).toLocaleDateString('nl-NL', { month: 'long', day: 'numeric' })}
               </p>
             </div>
             <div className="text-right">
               {customer.isToday ? (
                 <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-medium">
-                  Today! 🎉
+                  {t('birthday.today')} 🎉
                 </span>
               ) : (
                 <span className="text-sm text-gray-600">
-                  in {customer.daysUntil} {customer.daysUntil === 1 ? 'day' : 'days'}
+                  {t('birthday.inDays')} {customer.daysUntil} {customer.daysUntil === 1 ? t('birthday.day') : t('birthday.days')}
                 </span>
               )}
             </div>
