@@ -83,10 +83,10 @@
   },
   "emailTemplates": {
     "quickTemplates": "Quick Email Templates",
-    "birthday": "Birthday",
-    "reorder": "Reorder Reminder",
-    "thankyou": "Thank You",
-    "checkin": "Check In",
+    "birthday": "🎂 Birthday",
+    "reorder": "🔔 Reorder Reminder",
+    "thankyou": "🙏 Thank You",
+    "checkin": "👋 Check In",
     "copy": "Copy",
     "send": "Send"
   },

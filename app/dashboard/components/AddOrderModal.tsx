@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -17,23 +16,23 @@ interface AddOrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  t: any;
 }
 
-export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: AddOrderModalProps) {
-  const t = useTranslations();
+export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t }: AddOrderModalProps) {
+  if (!isOpen || !customer) return null;
+
   const [loading, setLoading] = useState(false);
   const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
   const [paymentStatus, setPaymentStatus] = useState('paid');
   const [notes, setNotes] = useState('');
   
-  // Current product being added
   const [currentProduct, setCurrentProduct] = useState({
     productName: '',
     quantity: '1',
     price: '',
   });
   
-  // List of products in this order
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
 
   const addLineItem = () => {
@@ -56,7 +55,6 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
       }
     ]);
 
-    // Reset current product form
     setCurrentProduct({
       productName: '',
       quantity: '1',
@@ -96,7 +94,6 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
       onSuccess();
       onClose();
       
-      // Reset everything
       setLineItems([]);
       setCurrentProduct({ productName: '', quantity: '1', price: '' });
       setOrderDate(new Date().toISOString().split('T')[0]);
@@ -110,16 +107,13 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
     }
   };
 
-  if (!isOpen || !customer) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-          <h2 className="text-2xl font-bold">{t('order.addOrder')}</h2>
-          <p className="text-sm text-gray-600">{t('order.for')} {customer.name}</p>
-          <h3 className="font-semibold text-gray-900 mb-3">{t('order.addProducts')}</h3>
+            <h2 className="text-2xl font-bold">{t('order.addOrder')}</h2>
+            <p className="text-sm text-gray-600">{t('order.for')} {customer.name}</p>
           </div>
           <button
             onClick={onClose}
@@ -130,19 +124,18 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Add Product Section */}
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 mb-3">Add Products</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">{t('order.addProducts')}</h3>
             
             <div className="space-y-3">
               <div>
-              <input
-  type="text"
-  value={currentProduct.productName}
-  onChange={(e) => setCurrentProduct({ ...currentProduct, productName: e.target.value })}
-  placeholder={t('order.productPlaceholder')}
-  className="..."
-/>
+                <input
+                  type="text"
+                  value={currentProduct.productName}
+                  onChange={(e) => setCurrentProduct({ ...currentProduct, productName: e.target.value })}
+                  placeholder={t('order.productPlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -168,17 +161,16 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
                   />
                 </div>
                 <button
-  type="button"
-  onClick={addLineItem}
-  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
->
-  + {t('order.add')}
-</button>
+                  type="button"
+                  onClick={addLineItem}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+                >
+                  + {t('order.add')}
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Order Items List */}
           {lineItems.length > 0 && (
             <div>
               <h3 className="font-semibold text-gray-900 mb-3">{t('order.orderItems')}</h3>
@@ -204,18 +196,17 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
 
               <div className="mt-4 bg-purple-50 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-gray-900">Total Amount:</span>
                   <span className="font-semibold text-gray-900">{t('order.totalAmount')}:</span>
+                  <span className="text-2xl font-bold text-purple-600">€{totalAmount.toFixed(2)}</span>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Order Details */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('order.orderDate')} *
+                {t('order.orderDate')} *
               </label>
               <input
                 type="date"
@@ -228,7 +219,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('order.paymentStatus')} *
+                {t('order.paymentStatus')} *
               </label>
               <select
                 value={paymentStatus}
@@ -236,23 +227,23 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess }: 
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
                 <option value="paid">{t('orderHistory.paid')}</option>
-<option value="pending">{t('orderHistory.pending')}</option>
-<option value="refunded">{t('orderHistory.refunded')}</option>
+                <option value="pending">{t('orderHistory.pending')}</option>
+                <option value="refunded">{t('orderHistory.refunded')}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('order.notes')}
+              {t('order.notes')}
             </label>
             <textarea
-  value={notes}
-  onChange={(e) => setNotes(e.target.value)}
-  rows={2}
-  placeholder={t('order.notesPlaceholder')}
-  className="..."
-/>
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+              placeholder={t('order.notesPlaceholder')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
           </div>
 
           <div className="flex gap-3 pt-4 border-t">

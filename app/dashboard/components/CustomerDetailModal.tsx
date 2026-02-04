@@ -158,6 +158,7 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
           setShowAddOrder(false);
           setRefreshKey(prev => prev + 1);
         }}
+        t={t}
         />
         </div>
       </div>
