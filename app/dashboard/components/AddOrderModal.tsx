@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-interface LineItem {
-  productName: string;
-  quantity: number;
-  price: number;
-  subtotal: number;
+interface AddOrderModalProps {
+  customer: any;
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  t: any;
+  userId: string;  // Add this line
 }
 
 interface AddOrderModalProps {
@@ -19,7 +21,7 @@ interface AddOrderModalProps {
   t: any;
 }
 
-export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t }: AddOrderModalProps) {
+export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t, userId }: AddOrderModalProps) {
   if (!isOpen || !customer) return null;
 
   const [loading, setLoading] = useState(false);
@@ -87,6 +89,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t 
         orderDate: orderDate,
         paymentStatus: paymentStatus,
         notes: notes,
+        userId: userId,  // Add this line
         createdAt: serverTimestamp(),
       });
 

@@ -10,9 +10,10 @@ interface AddCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  userId: string;
 }
 
-export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCustomerModalProps) {
+export default function AddCustomerModal({ isOpen, onClose, onSuccess, userId }: AddCustomerModalProps) {
   const t = useTranslations();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -37,6 +38,7 @@ export default function AddCustomerModal({ isOpen, onClose, onSuccess }: AddCust
     try {
       await addDoc(collection(db, 'customers'), {
         ...formData,
+        userId: userId,  // Add this line
         createdAt: serverTimestamp(),
       });
 

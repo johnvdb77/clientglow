@@ -12,9 +12,10 @@ interface CustomerDetailModalProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  userId: string;  // Add this line
 }
 
-export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit, onDelete }: CustomerDetailModalProps) {
+export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit, onDelete, userId }: CustomerDetailModalProps) {
   const [showAddOrder, setShowAddOrder] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -151,15 +152,16 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
 </div>
 
 <AddOrderModal
-        customer={customer}
-        isOpen={showAddOrder}
-        onClose={() => setShowAddOrder(false)}
-        onSuccess={() => {
-          setShowAddOrder(false);
-          setRefreshKey(prev => prev + 1);
-        }}
-        t={t}
-        />
+  customer={customer}
+  isOpen={showAddOrder}
+  onClose={() => setShowAddOrder(false)}
+  onSuccess={() => {
+    setShowAddOrder(false);
+    setRefreshKey(prev => prev + 1);
+  }}
+  t={t}
+  userId={userId}
+/>
         </div>
       </div>
     );
