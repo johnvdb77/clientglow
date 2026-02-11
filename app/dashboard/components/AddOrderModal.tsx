@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-interface AddOrderModalProps {
-  customer: any;
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-  t: any;
-  userId: string;  // Add this line
+interface LineItem {
+  productName: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
 }
 
 interface AddOrderModalProps {
@@ -19,6 +17,7 @@ interface AddOrderModalProps {
   onClose: () => void;
   onSuccess: () => void;
   t: any;
+  userId: string;
 }
 
 export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t, userId }: AddOrderModalProps) {
