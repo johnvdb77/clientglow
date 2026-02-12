@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -17,6 +17,16 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [locale, setLocale] = useState('en');
+const [t, setT] = useState<any>({});
+
+useEffect(() => {
+  const savedLocale = localStorage.getItem('clientglow_locale') || 'en';
+  setLocale(savedLocale);
+  import(`../../messages/${savedLocale}.json`).then((msgs) => {
+    setT(msgs.default);
+  });
+}, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,14 +91,14 @@ export default function RegisterPage() {
     alt="ClientGlow" 
     className="h-16 mx-auto mb-4"
   />
-   <p className="text-gray-600">Create your account</p>
+   <p className="text-gray-600">{t.auth?.createAccount || 'Create your account'}</p>
    </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Your Name
-              </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+  {t.auth?.yourName || 'Your Name'}
+</label>
               <input
                 type="text"
                 value={formData.name}
@@ -102,8 +112,8 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
+  {t.auth?.email || 'Email'}
+</label>
               <input
                 type="email"
                 value={formData.email}
@@ -116,14 +126,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+  {t.auth?.password || 'Password'}
+</label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="At least 6 characters"
+                placeholder={t.auth?.passwordMinLength || 'At least 6 characters'}
                 required
                 disabled={loading}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
@@ -131,14 +141,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+  {t.auth?.confirmPassword || 'Confirm Password'}
+</label>
               <input
                 type="password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                placeholder="Repeat your password"
+                placeholder={t.auth?.repeatPassword || 'Repeat your password'}
                 required
                 disabled={loading}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
@@ -154,19 +164,19 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full px-4 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? (t.auth?.creatingAccount || 'Creating account...') : (t.auth?.createAccountButton || 'Create Account')}
             </button>
-          </form>
+            </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link href="/login" className="text-purple-600 hover:text-purple-800 font-medium">
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
+<div className="mt-6 text-center">
+  <p className="text-sm text-gray-600">
+    {t.auth?.haveAccount || 'Already have an account?'}{' '}
+    <Link href="/login" className="text-purple-600 hover:text-purple-800 font-medium">
+      {t.auth?.signInButton || 'Sign in'}
+    </Link>
+  </p>
+</div>
+</div>
       </div>
     </div>
   );

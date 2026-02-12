@@ -108,14 +108,28 @@
     "productPlaceholder": "Product name (e.g., Aloe Vera Gel)",
     "items": "items"
   },
-  "actions": {
-    "edit": "Edit",
-    "delete": "Delete",
-    "close": "Close",
-    "cancel": "Cancel",
-    "save": "Save",
-    "sendEmail": "Send Email",
-    "addOrder": "Add Order",
-    "actions": "Actions"
+  "auth": {
+    "signIn": "Sign in to your account",
+    "createAccount": "Create your account",
+    "resetPassword": "Reset your password",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "yourName": "Your Name",
+    "forgotPassword": "Forgot password?",
+    "signInButton": "Sign In",
+    "createAccountButton": "Create Account",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending..",
+    "signingIn": "Signing in...",
+    "creatingAccount": "Creating account...",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "createOne": "Create one",
+    "backToLogin": "Back to login",
+    "checkEmail": "Check your email!",
+    "resetLinkSent": "We've sent a password reset link to",
+    "passwordMinLength": "At least 6 characters",
+    "repeatPassword": "Repeat your password"
   }
 }

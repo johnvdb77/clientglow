@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -14,6 +14,25 @@ export default function LoginPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+const [locale, setLocale] = useState('en');
+const [t, setT] = useState<any>({});
+
+useEffect(() => {
+  const savedLocale = localStorage.getItem('clientglow_locale') || 'en';
+  setLocale(savedLocale);
+  import(`../../messages/${savedLocale}.json`).then((msgs) => {
+    setT(msgs.default);
+  });
+}, []);
+
+useEffect(() => {
+  const savedLocale = localStorage.getItem('clientglow_locale') || 'en';
+  setLocale(savedLocale);
+  import(`../../messages/${savedLocale}.json`).then((msgs) => {
+    setT(msgs.default);
+  });
+}, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,14 +66,14 @@ export default function LoginPage() {
     alt="ClientGlow" 
     className="h-16 mx-auto mb-4"
   />
-  <p className="text-gray-600">Sign in to your account</p>
+  <p className="text-gray-600">{t.auth?.signIn || 'Sign in to your account'}</p>
 </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+  {t.auth?.email || 'Email'}
+</label>
               <input
                 type="email"
                 value={formData.email}
@@ -67,9 +86,9 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+  {t.auth?.password || 'Password'}
+</label>
               <input
                 type="password"
                 value={formData.password}
@@ -81,32 +100,32 @@ export default function LoginPage() {
               />
             </div>
             <div className="text-right">
-  <Link 
-    href="/forgot-password" 
-    className="text-sm text-purple-600 hover:text-purple-800"
-  >
-    Forgot password?
-  </Link>
+            <Link 
+  href="/forgot-password" 
+  className="text-sm text-purple-600 hover:text-purple-800"
+>
+  {t.auth?.forgotPassword || 'Forgot password?'}
+</Link>
 </div>
 
             {error && (
               <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</p>
             )}
 
-            <button
+<button
               type="submit"
               disabled={loading}
               className="w-full px-4 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (t.auth?.creatingAccount || 'Creating account...') : (t.auth?.createAccountButton || 'Create Account')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-purple-600 hover:text-purple-800 font-medium">
-                Create one
+              {t.auth?.haveAccount || 'Already have an account?'}{' '}
+              <Link href="/login" className="text-purple-600 hover:text-purple-800 font-medium">
+                {t.auth?.signInButton || 'Sign in'}
               </Link>
             </p>
           </div>

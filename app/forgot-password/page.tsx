@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
@@ -10,6 +10,16 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const [locale, setLocale] = useState('en');
+  const [t, setT] = useState<any>({});
+
+  useEffect(() => {
+  const savedLocale = localStorage.getItem('clientglow_locale') || 'en';
+  setLocale(savedLocale);
+  import(`../../messages/${savedLocale}.json`).then((msgs) => {
+    setT(msgs.default);
+  });
+}, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,28 +53,28 @@ export default function ForgotPasswordPage() {
               alt="ClientGlow" 
               className="h-16 mx-auto mb-4"
             />
-            <p className="text-gray-600">Reset your password</p>
+            <p className="text-gray-600">{t.auth?.resetPassword || 'Reset your password'}</p>
           </div>
 
           {sent ? (
             <div className="text-center">
               <div className="bg-green-50 text-green-800 p-4 rounded-lg mb-6">
-                <p className="font-medium">Check your email!</p>
-                <p className="text-sm mt-1">We've sent a password reset link to {email}</p>
+              <p className="font-medium">{t.auth?.checkEmail || 'Check your email!'}</p>
+              <p className="text-sm mt-1">{t.auth?.resetLinkSent || "We've sent a password reset link to"} {email}</p>
               </div>
               <Link 
-                href="/login" 
-                className="text-purple-600 hover:text-purple-800 font-medium"
-              >
-                Back to login
-              </Link>
+  href="/login" 
+  className="text-purple-600 hover:text-purple-800 font-medium"
+>
+  {t.auth?.backToLogin || 'Back to login'}
+</Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+  {t.auth?.email || 'Email'}
+</label>
                 <input
                   type="email"
                   value={email}
@@ -85,16 +95,16 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="w-full px-4 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
               >
-                {loading ? 'Sending...' : 'Send Reset Link'}
+                {loading ? (t.auth?.sending || 'Sending...') : (t.auth?.sendResetLink || 'Send Reset Link')}
               </button>
 
               <div className="text-center">
-                <Link 
-                  href="/login" 
-                  className="text-sm text-gray-600 hover:text-gray-800"
-                >
-                  Back to login
-                </Link>
+              <Link 
+  href="/login" 
+  className="text-sm text-gray-600 hover:text-gray-800"
+>
+  {t.auth?.backToLogin || 'Back to login'}
+</Link>
               </div>
             </form>
           )}

@@ -108,14 +108,28 @@
     "productPlaceholder": "Productnaam (bijv., Aloe Vera Gel)",
     "items": "artikelen"
   },
-  "actions": {
-    "edit": "Bewerken",
-    "delete": "Verwijderen",
-    "close": "Sluiten",
-    "cancel": "Annuleren",
-    "save": "Opslaan",
-    "sendEmail": "Email Versturen",
-    "addOrder": "Bestelling Toevoegen",
-    "actions": "Acties"
+  "auth": {
+    "signIn": "Inloggen op je account",
+    "createAccount": "Maak je account aan",
+    "resetPassword": "Wachtwoord resetten",
+    "email": "Email",
+    "password": "Wachtwoord",
+    "confirmPassword": "Bevestig wachtwoord",
+    "yourName": "Je naam",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "signInButton": "Inloggen",
+    "createAccountButton": "Account aanmaken",
+    "sendResetLink": "Verstuur reset link",
+    "sending": "Versturen...",
+    "signingIn": "Inloggen...",
+    "creatingAccount": "Account aanmaken...",
+    "noAccount": "Nog geen account?",
+    "haveAccount": "Heb je al een account?",
+    "createOne": "Maak er een aan",
+    "backToLogin": "Terug naar inloggen",
+    "checkEmail": "Check je email!",
+    "resetLinkSent": "We hebben een reset link gestuurd naar",
+    "passwordMinLength": "Minimaal 6 tekens",
+    "repeatPassword": "Herhaal je wachtwoord"
   }
 }
