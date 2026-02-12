@@ -165,7 +165,11 @@ export default function Dashboard() {
         <nav className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-purple-600">{t('nav.title')}</h1>
+            <img 
+  src="/logo.png" 
+  alt="ClientGlow" 
+  className="h-10"
+/>
               <div className="flex items-center gap-4">
                 <LanguageSwitcher />
                 <Link
