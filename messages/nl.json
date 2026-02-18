@@ -1,10 +1,11 @@
 {
   "nav": {
-    "title": "ClientGlow",
-    "templates": "Sjablonen",
-    "logout": "Uitloggen",
-    "backToHome": "Terug naar Home"
-  },
+  "title": "ClientGlow",
+  "templates": "Sjablonen",
+  "logout": "Uitloggen",
+  "backToHome": "Terug naar Home",
+  "help": "Hulp"
+},
   "dashboard": {
     "title": "Klanten Dashboard",
     "subtitle": "Beheer je klanten en volg relaties",
@@ -62,14 +63,15 @@
     "potential": "Potentieel"
   },
   "actions": {
-    "edit": "Bewerken",
-    "delete": "Verwijderen",
-    "close": "Sluiten",
-    "cancel": "Annuleren",
-    "save": "Opslaan",
-    "sendEmail": "Email Versturen",
-    "addOrder": "Bestelling Toevoegen"
-  },
+  "edit": "Bewerken",
+  "delete": "Verwijderen",
+  "close": "Sluiten",
+  "cancel": "Annuleren",
+  "save": "Opslaan",
+  "sendEmail": "Email Versturen",
+  "addOrder": "Bestelling Toevoegen",
+  "actions": "Acties"
+},
   "orderHistory": {
     "title": "Bestelgeschiedenis",
     "addOrder": "Bestelling Toevoegen",

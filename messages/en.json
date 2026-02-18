@@ -1,10 +1,11 @@
 {
   "nav": {
-    "title": "ClientGlow",
-    "templates": "Templates",
-    "logout": "Logout",
-    "backToHome": "Back to Home"
-  },
+  "title": "ClientGlow",
+  "templates": "Templates",
+  "logout": "Logout",
+  "backToHome": "Back to Home",
+  "help": "Help"
+},
   "dashboard": {
     "title": "Customer Dashboard",
     "subtitle": "Manage your customers and track relationships",
@@ -62,14 +63,15 @@
     "potential": "Potential"
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete",
-    "close": "Close",
-    "cancel": "Cancel",
-    "save": "Save",
-    "sendEmail": "Send Email",
-    "addOrder": "Add Order"
-  },
+  "edit": "Edit",
+  "delete": "Delete",
+  "close": "Close",
+  "cancel": "Cancel",
+  "save": "Save",
+  "sendEmail": "Send Email",
+  "addOrder": "Add Order",
+  "actions": "Actions"
+},
   "orderHistory": {
     "title": "Order History",
     "addOrder": "Add Order",

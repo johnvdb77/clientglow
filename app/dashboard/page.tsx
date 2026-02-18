@@ -159,9 +159,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      return (
-      <div className="min-h-screen bg-gray-50">
+  
+  <div className="min-h-screen bg-gray-50">
         <nav className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
@@ -170,10 +169,16 @@ export default function Dashboard() {
   alt="ClientGlow" 
   className="h-10"
 />
-              <div className="flex items-center gap-4">
-                <LanguageSwitcher />
-                <Link
-                  href="/dashboard/templates"
+<div className="flex items-center gap-4">
+  <LanguageSwitcher />
+  <Link 
+    href="/dashboard/help"
+    className="text-purple-600 hover:text-purple-800 font-medium"
+  >
+    ❓ {t('nav.help') || 'Help'}
+  </Link>
+  <Link 
+    href="/dashboard/templates"
                   className="text-purple-600 hover:text-purple-800 font-medium"
                 >
                   📧 {t('nav.templates')}
@@ -371,7 +376,6 @@ export default function Dashboard() {
           isOpen={showPrivacy}
           onClose={() => setShowPrivacy(false)}
         />
-            </div>
     </div>
   );
 }
