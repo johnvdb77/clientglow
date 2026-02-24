@@ -96,6 +96,7 @@
   "order": {
     "addOrder": "Bestelling Toevoegen",
     "for": "voor",
+    "selectProduct": "Selecteer een product...",
     "addProducts": "Producten Toevoegen",
     "productName": "Productnaam",
     "quantity": "Aantal",

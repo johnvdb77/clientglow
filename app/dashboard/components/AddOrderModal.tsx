@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -27,6 +27,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
   const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
   const [paymentStatus, setPaymentStatus] = useState('paid');
   const [notes, setNotes] = useState('');
+  const [products, setProducts] = useState<any[]>([]);
   
   const [currentProduct, setCurrentProduct] = useState({
     productName: '',
@@ -69,7 +70,29 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
 
   const totalAmount = lineItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+  const fetchProducts = async () => {
+    if (!userId) return;
+    try {
+      const q = query(
+        collection(db, 'products'),
+        where('userId', '==', userId)
+      );
+      const snapshot = await getDocs(q);
+      const productData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProducts(productData);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+  
+  fetchProducts();
+}, [userId]);
+
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (lineItems.length === 0) {
@@ -160,13 +183,25 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
             
             <div className="space-y-3">
               <div>
-                <input
-                  type="text"
-                  value={currentProduct.productName}
-                  onChange={(e) => setCurrentProduct({ ...currentProduct, productName: e.target.value })}
-                  placeholder={t('order.productPlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
+              <select
+  value={currentProduct.productName}
+  onChange={(e) => {
+    const selectedProduct = products.find(p => p.name === e.target.value);
+    setCurrentProduct({
+      ...currentProduct,
+      productName: e.target.value,
+      price: selectedProduct ? selectedProduct.sellPrice.toString() : ''
+    });
+  }}
+  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+>
+  <option value="">{t('order.selectProduct') || 'Select a product...'}</option>
+  {products.map((product) => (
+    <option key={product.id} value={product.name}>
+      {product.name} - €{product.sellPrice.toFixed(2)} ({product.quantity} {t('inventory.inStock') || 'in stock'})
+    </option>
+  ))}
+</select>
               </div>
 
               <div className="grid grid-cols-3 gap-3">

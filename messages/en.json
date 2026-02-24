@@ -96,6 +96,7 @@
   "order": {
     "addOrder": "Add Order",
     "for": "for",
+    "selectProduct": "Select a product...",
     "addProducts": "Add Products",
     "productName": "Product name",
     "quantity": "Qty",
