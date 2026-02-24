@@ -198,6 +198,12 @@ export default function Dashboard() {
                 >
                   ← {t('nav.backToHome')}
                 </Link>
+                <Link 
+  href="/dashboard/inventory"
+  className="text-purple-600 hover:text-purple-800 font-medium"
+>
+  📦 {t('nav.inventory') || 'Inventory'}
+</Link>
               </div>
             </div>
           </div>

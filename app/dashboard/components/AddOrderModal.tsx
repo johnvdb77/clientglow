@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface LineItem {
@@ -76,10 +76,39 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
       alert('Please add at least one product to the order');
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
+      // First, check and update inventory for each line item
+      for (const item of lineItems) {
+        // Find product in inventory by name
+        const productQuery = query(
+          collection(db, 'products'),
+          where('userId', '==', userId),
+          where('name', '==', item.productName)
+        );
+        const productSnapshot = await getDocs(productQuery);
+        
+        if (!productSnapshot.empty) {
+          const productDoc = productSnapshot.docs[0];
+          const currentQuantity = productDoc.data().quantity;
+          const newQuantity = currentQuantity - item.quantity;
+          
+          if (newQuantity < 0) {
+            alert(`Not enough stock for ${item.productName}. Available: ${currentQuantity}`);
+            setLoading(false);
+            return;
+          }
+          
+          // Update inventory
+          await updateDoc(doc(db, 'products', productDoc.id), {
+            quantity: newQuantity
+          });
+        }
+      }
+  
+      // Save the order
       await addDoc(collection(db, 'orders'), {
         customerId: customer.id,
         customerName: customer.name,
@@ -88,10 +117,10 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
         orderDate: orderDate,
         paymentStatus: paymentStatus,
         notes: notes,
-        userId: userId,  // Add this line
+        userId: userId,
         createdAt: serverTimestamp(),
       });
-
+  
       alert('Order added successfully!');
       onSuccess();
       onClose();

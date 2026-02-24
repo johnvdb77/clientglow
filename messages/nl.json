@@ -4,6 +4,7 @@
   "templates": "Sjablonen",
   "logout": "Uitloggen",
   "backToHome": "Terug naar Home",
+  "inventory": "Voorraad",
   "help": "Hulp"
 },
   "dashboard": {
@@ -133,5 +134,28 @@
     "resetLinkSent": "We hebben een reset link gestuurd naar",
     "passwordMinLength": "Minimaal 6 tekens",
     "repeatPassword": "Herhaal je wachtwoord"
+  },
+  "inventory": {
+    "title": "Voorraad",
+    "subtitle": "Beheer je productvoorraad",
+    "addProduct": "Product Toevoegen",
+    "productName": "Productnaam",
+    "quantity": "Aantal",
+    "purchasePrice": "Inkoopprijs",
+    "sellPrice": "Verkoopprijs",
+    "stock": "Voorraad",
+    "lowStock": "Lage Voorraad",
+    "outOfStock": "Uitverkocht",
+    "inStock": "Op Voorraad",
+    "totalValue": "Totale Waarde",
+    "products": "producten",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "noProducts": "Nog geen producten",
+    "addFirst": "Voeg je eerste product toe",
+    "warning": "Waarschuwing",
+    "notEnoughStock": "Niet genoeg voorraad beschikbaar"
   }
 }

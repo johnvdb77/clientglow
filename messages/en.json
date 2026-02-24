@@ -4,6 +4,7 @@
   "templates": "Templates",
   "logout": "Logout",
   "backToHome": "Back to Home",
+  "inventory": "Inventory",
   "help": "Help"
 },
   "dashboard": {
@@ -133,5 +134,28 @@
     "resetLinkSent": "We've sent a password reset link to",
     "passwordMinLength": "At least 6 characters",
     "repeatPassword": "Repeat your password"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "subtitle": "Manage your product stock",
+    "addProduct": "Add Product",
+    "productName": "Product Name",
+    "quantity": "Quantity",
+    "purchasePrice": "Purchase Price",
+    "sellPrice": "Sell Price",
+    "stock": "Stock",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "inStock": "In Stock",
+    "totalValue": "Total Value",
+    "products": "products",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "noProducts": "No products yet",
+    "addFirst": "Add your first product",
+    "warning": "Warning",
+    "notEnoughStock": "Not enough stock available"
   }
 }
