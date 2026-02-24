@@ -157,6 +157,13 @@
     "noProducts": "Nog geen producten",
     "addFirst": "Voeg je eerste product toe",
     "warning": "Waarschuwing",
-    "notEnoughStock": "Niet genoeg voorraad beschikbaar"
+    "notEnoughStock": "Niet genoeg voorraad beschikbaar",
+    "history": "Voorraad Geschiedenis",
+    "noHistory": "Nog geen geschiedenis",
+    "date": "Datum",
+    "change": "Wijziging",
+    "reason": "Reden",
+    "sold": "Verkocht",
+    "added": "Toegevoegd"
   }
 }

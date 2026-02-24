@@ -128,6 +128,17 @@ const handleSubmit = async (e: React.FormEvent) => {
           await updateDoc(doc(db, 'products', productDoc.id), {
             quantity: newQuantity
           });
+          // Log inventory history
+await addDoc(collection(db, 'inventoryHistory'), {
+  userId: userId,
+  productId: productDoc.id,
+  productName: item.productName,
+  change: -item.quantity,
+  reason: 'sold',
+  orderId: '', // Will update after order is created
+  date: new Date().toISOString(),
+  createdAt: serverTimestamp(),
+});
         }
       }
   

@@ -25,7 +25,7 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  
+  const [history, setHistory] = useState<any[]>([]);
   const [locale, setLocale] = useState('en');
   const [t, setT] = useState<any>({});
 
@@ -64,6 +64,7 @@ export default function InventoryPage() {
   useEffect(() => {
     if (user) {
       fetchProducts();
+      fetchHistory();
     }
   }, [user]);
 
@@ -86,6 +87,26 @@ export default function InventoryPage() {
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchHistory = async () => {
+    if (!user) return;
+    
+    try {
+      const q = query(
+        collection(db, 'inventoryHistory'),
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      const historyData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setHistory(historyData);
+    } catch (error) {
+      console.error('Error fetching history:', error);
     }
   };
 
@@ -225,6 +246,46 @@ export default function InventoryPage() {
             </table>
           </div>
         )}
+        {/* Inventory History */}
+        <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
+          <div className="px-6 py-4 border-b">
+            <h2 className="text-xl font-semibold text-gray-900">
+              {t.inventory?.history || 'Inventory History'}
+            </h2>
+          </div>
+          
+          {history.length === 0 ? (
+            <p className="p-6 text-gray-500">{t.inventory?.noHistory || 'No history yet'}</p>
+          ) : (
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t.inventory?.date || 'Date'}</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t.inventory?.productName || 'Product'}</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t.inventory?.change || 'Change'}</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t.inventory?.reason || 'Reason'}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {history.slice(0, 10).map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-gray-600">
+                      {new Date(item.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 font-medium text-gray-900">{item.productName}</td>
+                    <td className={`px-6 py-4 font-medium ${item.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {item.change > 0 ? '+' : ''}{item.change}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      {item.reason === 'sold' ? (t.inventory?.sold || 'Sold') : 
+                       item.reason === 'added' ? (t.inventory?.added || 'Added') : item.reason}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
       {/* Add Product Modal */}

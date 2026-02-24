@@ -157,6 +157,13 @@
     "noProducts": "No products yet",
     "addFirst": "Add your first product",
     "warning": "Warning",
-    "notEnoughStock": "Not enough stock available"
+    "notEnoughStock": "Not enough stock available",
+    "history": "Inventory History",
+    "noHistory": "No history yet",
+    "date": "Date",
+    "change": "Change",
+    "reason": "Reason",
+    "sold": "Sold",
+    "added": "Added"
   }
 }
