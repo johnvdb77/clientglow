@@ -28,7 +28,7 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
   const [paymentStatus, setPaymentStatus] = useState('paid');
   const [notes, setNotes] = useState('');
   const [products, setProducts] = useState<any[]>([]);
-  
+  const [productSearch, setProductSearch] = useState('');
   const [currentProduct, setCurrentProduct] = useState({
     productName: '',
     quantity: '1',
@@ -36,6 +36,9 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
   });
   
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
+  const filteredProducts = products.filter(product => 
+    product.name.toLowerCase().includes(productSearch.toLowerCase())
+  );
 
   const addLineItem = () => {
     if (!currentProduct.productName || !currentProduct.price) {
@@ -194,60 +197,84 @@ await addDoc(collection(db, 'inventoryHistory'), {
             
             <div className="space-y-3">
               <div>
-              <select
-  value={currentProduct.productName}
-  onChange={(e) => {
-    const selectedProduct = products.find(p => p.name === e.target.value);
-    setCurrentProduct({
-      ...currentProduct,
-      productName: e.target.value,
-      price: selectedProduct ? selectedProduct.sellPrice.toString() : ''
-    });
-  }}
-  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
->
-  <option value="">{t('order.selectProduct') || 'Select a product...'}</option>
-  {products.map((product) => (
-    <option key={product.id} value={product.name}>
-      {product.name} - €{product.sellPrice.toFixed(2)} ({product.quantity} {t('inventory.inStock') || 'in stock'})
-    </option>
-  ))}
-</select>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('order.productName')}
+                </label>
+                <div className="relative">
+  <input
+    type="text"
+    value={productSearch || currentProduct.productName}
+    onChange={(e) => {
+      setProductSearch(e.target.value);
+      setCurrentProduct({ ...currentProduct, productName: '' });
+    }}
+    placeholder={t('order.searchProduct') || 'Search product...'}
+    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+  />
+  {productSearch && filteredProducts.length > 0 && (
+    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+      {filteredProducts.map((product) => (
+        <button
+          key={product.id}
+          type="button"
+          onClick={() => {
+            setCurrentProduct({
+              ...currentProduct,
+              productName: product.name,
+              price: product.sellPrice.toString()
+            });
+            setProductSearch('');
+          }}
+          className="w-full px-3 py-2 text-left hover:bg-purple-50 flex justify-between"
+        >
+          <span>{product.name}</span>
+          <span className="text-gray-500">€{product.sellPrice.toFixed(2)} ({product.quantity} in stock)</span>
+        </button>
+      ))}
+    </div>
+  )}
+</div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('order.quantity')}
+                  </label>
                   <input
                     type="number"
                     min="1"
                     value={currentProduct.quantity}
                     onChange={(e) => setCurrentProduct({ ...currentProduct, quantity: e.target.value })}
-                    placeholder={t('order.quantity')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('order.price')}
+                  </label>
                   <input
                     type="number"
-                    min="0"
                     step="0.01"
+                    min="0"
                     value={currentProduct.price}
                     onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
-                    placeholder={t('order.price')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={addLineItem}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
-                >
-                  + {t('order.add')}
-                </button>
               </div>
+
+              <button
+                type="button"
+                onClick={addLineItem}
+                className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              >
+                + {t('order.add')}
+              </button>
             </div>
           </div>
 
+          {/* Line Items List */}
           {lineItems.length > 0 && (
             <div>
               <h3 className="font-semibold text-gray-900 mb-3">{t('order.orderItems')}</h3>
@@ -257,57 +284,54 @@ await addDoc(collection(db, 'inventoryHistory'), {
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{item.productName}</p>
                       <p className="text-sm text-gray-600">
-                        {item.quantity} × €{item.price.toFixed(2)} = €{item.subtotal.toFixed(2)}
+                        {item.quantity} x €{item.price.toFixed(2)} = €{item.subtotal.toFixed(2)}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeLineItem(index)}
-                      className="text-red-600 hover:text-red-800 ml-4"
+                      className="text-red-600 hover:text-red-800 text-sm font-medium"
                     >
                       {t('order.remove')}
                     </button>
                   </div>
                 ))}
               </div>
-
-              <div className="mt-4 bg-purple-50 p-4 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-gray-900">{t('order.totalAmount')}:</span>
-                  <span className="text-2xl font-bold text-purple-600">€{totalAmount.toFixed(2)}</span>
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex justify-between text-lg font-bold">
+                  <span>{t('order.totalAmount')}:</span>
+                  <span>€{totalAmount.toFixed(2)}</span>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('order.orderDate')} *
-              </label>
-              <input
-                type="date"
-                required
-                value={orderDate}
-                onChange={(e) => setOrderDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-            </div>
+          {/* Order Details */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('order.orderDate')}
+            </label>
+            <input
+              type="date"
+              value={orderDate}
+              onChange={(e) => setOrderDate(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('order.paymentStatus')} *
-              </label>
-              <select
-                value={paymentStatus}
-                onChange={(e) => setPaymentStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="paid">{t('orderHistory.paid')}</option>
-                <option value="pending">{t('orderHistory.pending')}</option>
-                <option value="refunded">{t('orderHistory.refunded')}</option>
-              </select>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('order.paymentStatus')}
+            </label>
+            <select
+              value={paymentStatus}
+              onChange={(e) => setPaymentStatus(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="paid">{t('orderHistory.paid')}</option>
+              <option value="pending">{t('orderHistory.pending')}</option>
+              <option value="refunded">{t('orderHistory.refunded')}</option>
+            </select>
           </div>
 
           <div>

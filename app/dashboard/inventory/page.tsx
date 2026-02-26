@@ -22,12 +22,17 @@ export default function InventoryPage() {
   const [user, setUser] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [locale, setLocale] = useState('en');
   const [t, setT] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+
+const filteredProducts = products.filter(product => 
+  product.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   useEffect(() => {
     const savedLocale = localStorage.getItem('clientglow_locale') || 'en';
@@ -155,17 +160,26 @@ export default function InventoryPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t.inventory?.title || 'Inventory'}</h1>
-            <p className="text-gray-600">{t.inventory?.subtitle || 'Manage your product stock'}</p>
-          </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
-          >
-            + {t.inventory?.addProduct || 'Add Product'}
-          </button>
-        </div>
+  <div>
+    <h1 className="text-3xl font-bold text-gray-900">{t.inventory?.title || 'Inventory'}</h1>
+    <p className="text-gray-600">{t.inventory?.subtitle || 'Manage your product stock'}</p>
+  </div>
+  <div className="flex items-center gap-4">
+    <input
+      type="text"
+      placeholder={t.inventory?.searchProducts || 'Search products...'}
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+    />
+    <button
+      onClick={() => setShowAddModal(true)}
+      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+    >
+      + {t.inventory?.addProduct || 'Add Product'}
+    </button>
+  </div>
+</div>
 
         {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -186,7 +200,7 @@ export default function InventoryPage() {
         {/* Products List */}
         {loading ? (
           <p className="text-gray-600">Loading...</p>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <p className="text-gray-500 mb-4">{t.inventory?.noProducts || 'No products yet'}</p>
             <button
@@ -210,7 +224,7 @@ export default function InventoryPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {products.map((product) => {
+              {filteredProducts.map((product) => {
                   const status = getStockStatus(product.quantity);
                   return (
                     <tr key={product.id} className="hover:bg-gray-50">

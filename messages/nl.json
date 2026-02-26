@@ -97,6 +97,7 @@
     "addOrder": "Bestelling Toevoegen",
     "for": "voor",
     "selectProduct": "Selecteer een product...",
+"searchProduct": "Zoek product...",
     "addProducts": "Producten Toevoegen",
     "productName": "Productnaam",
     "quantity": "Aantal",
@@ -139,6 +140,8 @@
   "inventory": {
     "title": "Voorraad",
     "subtitle": "Beheer je productvoorraad",
+    "searchProducts": "Zoek producten...",
+
     "addProduct": "Product Toevoegen",
     "productName": "Productnaam",
     "quantity": "Aantal",
