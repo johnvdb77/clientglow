@@ -369,6 +369,7 @@ export default function Dashboard() {
   }}
   onDelete={() => handleDeleteCustomer(selectedCustomer!)}
   userId={user?.uid || ''}
+  consultantName={user?.displayName || user?.email?.split('@')[0] || 'ClientGlow'}
 />
 
         <EditCustomerModal

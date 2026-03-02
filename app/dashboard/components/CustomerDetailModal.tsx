@@ -13,9 +13,10 @@ interface CustomerDetailModalProps {
   onEdit: () => void;
   onDelete: () => void;
   userId: string;  // Add this line
+  consultantName?: string;
 }
 
-export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit, onDelete, userId }: CustomerDetailModalProps) {
+export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit, onDelete, userId, consultantName }: CustomerDetailModalProps) {
   const [showAddOrder, setShowAddOrder] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -116,6 +117,7 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
   key={refreshKey}
   userId={userId}
   t={t}
+  consultantName={consultantName}
 />
 
 <QuickTemplates 

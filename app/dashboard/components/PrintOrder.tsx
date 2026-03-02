@@ -23,12 +23,13 @@ interface Order {
 }
 
 interface PrintOrderProps {
-  order: Order;
-  t: any;
-  onClose: () => void;
-}
+    order: Order;
+    t: any;
+    onClose: () => void;
+    consultantName?: string;
+  }
 
-export default function PrintOrder({ order, t, onClose }: PrintOrderProps) {
+  export default function PrintOrder({ order, t, onClose, consultantName }: PrintOrderProps) {
   const handlePrint = () => {
     window.print();
   };
@@ -54,10 +55,10 @@ export default function PrintOrder({ order, t, onClose }: PrintOrderProps) {
 
         {/* Printable content */}
         <div className="print:m-0 print:p-0">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold">ClientGlow</h1>
-            <p className="text-gray-600">{t('order.orderConfirmation') || 'Order Confirmation'}</p>
-          </div>
+        <div className="text-center mb-6">
+  <h1 className="text-2xl font-bold">{consultantName || 'ClientGlow'}</h1>
+  <p className="text-gray-600">{t('order.orderConfirmation') || 'Order Confirmation'}</p>
+</div>
 
           <div className="border-b pb-4 mb-4">
             <p className="font-semibold">{t('customer.name') || 'Customer'}: {order.customerName}</p>

@@ -32,9 +32,10 @@ interface OrderHistoryProps {
   onAddOrder: () => void;
   userId: string;
   t: any;
+  consultantName?: string;
 }
 
-export default function OrderHistory({ customerId, onAddOrder, userId, t }: OrderHistoryProps) {
+export default function OrderHistory({ customerId, onAddOrder, userId, t, consultantName }: OrderHistoryProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [printingOrder, setPrintingOrder] = useState<any>(null);
@@ -140,6 +141,14 @@ export default function OrderHistory({ customerId, onAddOrder, userId, t }: Orde
   className="ml-2 text-gray-600 hover:text-gray-800 text-sm font-medium"
 >
   🖨️ {t('order.print') || 'Print'}
+  {printingOrder && (
+  <PrintOrder
+    order={printingOrder}
+    t={t}
+    onClose={() => setPrintingOrder(null)}
+    consultantName={consultantName}
+  />
+)}
 </button>
                     </div>
                     
@@ -195,6 +204,7 @@ export default function OrderHistory({ customerId, onAddOrder, userId, t }: Orde
     order={printingOrder}
     t={t}
     onClose={() => setPrintingOrder(null)}
+    consultantName={consultantName}
   />
 )}
     </div>
