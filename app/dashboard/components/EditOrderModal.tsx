@@ -1,0 +1,454 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { doc, updateDoc, collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+
+interface LineItem {
+  productName: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+}
+
+interface Order {
+  id: string;
+  customerId: string;
+  customerName: string;
+  lineItems: LineItem[];
+  subtotal?: number;
+  discount?: number;
+  discountType?: string;
+  discountAmount?: number;
+  totalAmount: number;
+  orderDate: string;
+  paymentStatus: string;
+  paymentMethod?: string;
+  notes: string;
+  userId: string;
+}
+
+interface EditOrderModalProps {
+  order: Order;
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  t: any;
+  userId: string;
+}
+
+export default function EditOrderModal({ order, isOpen, onClose, onSuccess, t, userId }: EditOrderModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [lineItems, setLineItems] = useState<LineItem[]>(order.lineItems || []);
+  const [originalLineItems] = useState<LineItem[]>(order.lineItems || []);
+  const [orderDate, setOrderDate] = useState(order.orderDate);
+  const [paymentStatus, setPaymentStatus] = useState(order.paymentStatus);
+  const [paymentMethod, setPaymentMethod] = useState(order.paymentMethod || 'bank');
+  const [notes, setNotes] = useState(order.notes || '');
+  const [discount, setDiscount] = useState(order.discount?.toString() || '');
+  const [discountType, setDiscountType] = useState(order.discountType || 'percent');
+  
+  const [products, setProducts] = useState<any[]>([]);
+  const [productSearch, setProductSearch] = useState('');
+  const [currentProduct, setCurrentProduct] = useState({
+    productName: '',
+    quantity: '1',
+    price: '',
+  });
+
+  const filteredProducts = products.filter(product => 
+    product.name.toLowerCase().includes(productSearch.toLowerCase())
+  );
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (!userId) return;
+      try {
+        const q = query(
+          collection(db, 'products'),
+          where('userId', '==', userId)
+        );
+        const snapshot = await getDocs(q);
+        const productData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProducts(productData);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    
+    fetchProducts();
+  }, [userId]);
+
+  const addLineItem = () => {
+    if (!currentProduct.productName || !currentProduct.price) {
+      alert('Please select a product');
+      return;
+    }
+
+    const quantity = parseInt(currentProduct.quantity) || 1;
+    const price = parseFloat(currentProduct.price) || 0;
+
+    setLineItems([
+      ...lineItems,
+      {
+        productName: currentProduct.productName,
+        quantity,
+        price,
+        subtotal: quantity * price,
+      },
+    ]);
+
+    setCurrentProduct({ productName: '', quantity: '1', price: '' });
+    setProductSearch('');
+  };
+
+  const removeLineItem = (index: number) => {
+    setLineItems(lineItems.filter((_, i) => i !== index));
+  };
+
+  const subtotal = lineItems.reduce((sum, item) => sum + item.subtotal, 0);
+  const discountAmount = discountType === 'percent' 
+    ? (subtotal * (parseFloat(discount) || 0) / 100)
+    : (parseFloat(discount) || 0);
+  const totalAmount = Math.max(0, subtotal - discountAmount);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (lineItems.length === 0) {
+      alert('Please add at least one product');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Calculate inventory changes
+      for (const originalItem of originalLineItems) {
+        const newItem = lineItems.find(li => li.productName === originalItem.productName);
+        const quantityDiff = newItem 
+          ? originalItem.quantity - newItem.quantity 
+          : originalItem.quantity; // Item was removed, add back to inventory
+        
+        if (quantityDiff !== 0) {
+          // Find product and update inventory
+          const productQuery = query(
+            collection(db, 'products'),
+            where('userId', '==', userId),
+            where('name', '==', originalItem.productName)
+          );
+          const productSnapshot = await getDocs(productQuery);
+          
+          if (!productSnapshot.empty) {
+            const productDoc = productSnapshot.docs[0];
+            const currentQuantity = productDoc.data().quantity;
+            
+            await updateDoc(doc(db, 'products', productDoc.id), {
+              quantity: currentQuantity + quantityDiff
+            });
+
+            // Log inventory history
+            await addDoc(collection(db, 'inventoryHistory'), {
+              userId: userId,
+              productId: productDoc.id,
+              productName: originalItem.productName,
+              change: quantityDiff,
+              reason: quantityDiff > 0 ? 'order_edited_returned' : 'order_edited_sold',
+              date: new Date().toISOString(),
+              createdAt: serverTimestamp(),
+            });
+          }
+        }
+      }
+
+      // Check for new items added
+      for (const newItem of lineItems) {
+        const originalItem = originalLineItems.find(oi => oi.productName === newItem.productName);
+        if (!originalItem) {
+          // This is a new item, deduct from inventory
+          const productQuery = query(
+            collection(db, 'products'),
+            where('userId', '==', userId),
+            where('name', '==', newItem.productName)
+          );
+          const productSnapshot = await getDocs(productQuery);
+          
+          if (!productSnapshot.empty) {
+            const productDoc = productSnapshot.docs[0];
+            const currentQuantity = productDoc.data().quantity;
+            
+            if (currentQuantity < newItem.quantity) {
+              alert(`Not enough stock for ${newItem.productName}. Available: ${currentQuantity}`);
+              setLoading(false);
+              return;
+            }
+            
+            await updateDoc(doc(db, 'products', productDoc.id), {
+              quantity: currentQuantity - newItem.quantity
+            });
+
+            // Log inventory history
+            await addDoc(collection(db, 'inventoryHistory'), {
+              userId: userId,
+              productId: productDoc.id,
+              productName: newItem.productName,
+              change: -newItem.quantity,
+              reason: 'order_edited_sold',
+              date: new Date().toISOString(),
+              createdAt: serverTimestamp(),
+            });
+          }
+        }
+      }
+
+      // Update the order
+      await updateDoc(doc(db, 'orders', order.id), {
+        lineItems: lineItems,
+        subtotal: subtotal,
+        discount: parseFloat(discount) || 0,
+        discountType: discountType,
+        discountAmount: discountAmount,
+        totalAmount: totalAmount,
+        orderDate: orderDate,
+        paymentStatus: paymentStatus,
+        paymentMethod: paymentMethod,
+        notes: notes,
+      });
+
+      alert(t('order.orderUpdated') || 'Order updated successfully!');
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error('Error updating order:', error);
+      alert('Failed to update order');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">{t('order.editOrder') || 'Edit Order'}</h2>
+            <p className="text-sm text-gray-600">{t('order.for') || 'for'} {order.customerName}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Add Product Section */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 mb-3">{t('order.addProducts') || 'Add Products'}</h3>
+            
+            <div className="space-y-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={productSearch || currentProduct.productName}
+                  onChange={(e) => {
+                    setProductSearch(e.target.value);
+                    setCurrentProduct({ ...currentProduct, productName: '' });
+                  }}
+                  placeholder={t('order.searchProduct') || 'Search product...'}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+                {productSearch && filteredProducts.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {filteredProducts.map((product) => (
+                      <button
+                        key={product.id}
+                        type="button"
+                        onClick={() => {
+                          setCurrentProduct({
+                            ...currentProduct,
+                            productName: product.name,
+                            price: product.sellPrice.toString()
+                          });
+                          setProductSearch('');
+                        }}
+                        className="w-full px-3 py-2 text-left hover:bg-purple-50 flex justify-between"
+                      >
+                        <span>{product.name}</span>
+                        <span className="text-gray-500">€{product.sellPrice.toFixed(2)} ({product.quantity} in stock)</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <input
+                  type="number"
+                  min="1"
+                  value={currentProduct.quantity}
+                  onChange={(e) => setCurrentProduct({ ...currentProduct, quantity: e.target.value })}
+                  placeholder={t('order.quantity') || 'Qty'}
+                  className="px-3 py-2 border border-gray-300 rounded-lg"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={currentProduct.price}
+                  onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
+                  placeholder={t('order.price') || 'Price'}
+                  className="px-3 py-2 border border-gray-300 rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={addLineItem}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                >
+                  + {t('order.add') || 'Add'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Line Items */}
+          {lineItems.length > 0 && (
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('order.orderItems') || 'Order Items'}</h3>
+              <div className="space-y-2">
+                {lineItems.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{item.productName}</p>
+                      <p className="text-sm text-gray-600">
+                        {item.quantity} × €{item.price.toFixed(2)} = €{item.subtotal.toFixed(2)}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeLineItem(index)}
+                      className="text-red-600 hover:text-red-800 ml-4"
+                    >
+                      {t('order.remove') || 'Remove'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Totals with Discount */}
+              <div className="mt-4 bg-purple-50 p-4 rounded-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">{t('order.subtotal') || 'Subtotal'}:</span>
+                  <span className="text-gray-900">€{subtotal.toFixed(2)}</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">{t('order.discount') || 'Discount'}:</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    placeholder="0"
+                    className="w-20 px-2 py-1 border border-gray-300 rounded text-center"
+                  />
+                  <select
+                    value={discountType}
+                    onChange={(e) => setDiscountType(e.target.value)}
+                    className="px-2 py-1 border border-gray-300 rounded"
+                  >
+                    <option value="percent">%</option>
+                    <option value="fixed">€</option>
+                  </select>
+                  {discountAmount > 0 && (
+                    <span className="text-red-600">-€{discountAmount.toFixed(2)}</span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between border-t pt-3">
+                  <span className="font-semibold text-gray-900">{t('order.totalAmount') || 'Total'}:</span>
+                  <span className="text-2xl font-bold text-purple-600">€{totalAmount.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Order Details */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('order.orderDate') || 'Order Date'} *
+              </label>
+              <input
+                type="date"
+                required
+                value={orderDate}
+                onChange={(e) => setOrderDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('order.paymentStatus') || 'Payment Status'} *
+              </label>
+              <select
+                value={paymentStatus}
+                onChange={(e) => setPaymentStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="paid">{t('orderHistory.paid') || 'Paid'}</option>
+                <option value="pending">{t('orderHistory.pending') || 'Pending'}</option>
+                <option value="refunded">{t('orderHistory.refunded') || 'Refunded'}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('order.paymentMethod') || 'Payment Method'}
+            </label>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="bank">{t('order.bank') || 'Bank Transfer'}</option>
+              <option value="cash">{t('order.cash') || 'Cash'}</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('order.notes') || 'Notes'}
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            >
+              {t('actions.cancel') || 'Cancel'}
+            </button>
+            <button
+              type="submit"
+              disabled={loading || lineItems.length === 0}
+              className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+            >
+              {loading ? '...' : (t('order.saveChanges') || 'Save Changes')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

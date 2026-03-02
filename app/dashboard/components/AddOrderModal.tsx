@@ -26,6 +26,9 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
   const [loading, setLoading] = useState(false);
   const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
   const [paymentStatus, setPaymentStatus] = useState('paid');
+  const [paymentMethod, setPaymentMethod] = useState('bank');
+  const [discount, setDiscount] = useState('0');
+  const [discountType, setDiscountType] = useState('fixed');
   const [notes, setNotes] = useState('');
   const [products, setProducts] = useState<any[]>([]);
   const [productSearch, setProductSearch] = useState('');
@@ -71,7 +74,11 @@ export default function AddOrderModal({ customer, isOpen, onClose, onSuccess, t,
     setLineItems(lineItems.filter((_, i) => i !== index));
   };
 
-  const totalAmount = lineItems.reduce((sum, item) => sum + item.subtotal, 0);
+  const subtotal = lineItems.reduce((sum, item) => sum + item.subtotal, 0);
+const discountAmount = discountType === 'percent' 
+  ? (subtotal * (parseFloat(discount) || 0) / 100)
+  : (parseFloat(discount) || 0);
+const totalAmount = Math.max(0, subtotal - discountAmount);
 
   useEffect(() => {
   const fetchProducts = async () => {
@@ -150,9 +157,14 @@ await addDoc(collection(db, 'inventoryHistory'), {
         customerId: customer.id,
         customerName: customer.name,
         lineItems: lineItems,
+        subtotal: subtotal,
+        discount: parseFloat(discount) || 0,
+        discountType: discountType,
+        discountAmount: discountAmount,
         totalAmount: totalAmount,
         orderDate: orderDate,
         paymentStatus: paymentStatus,
+        paymentMethod: paymentMethod,
         notes: notes,
         userId: userId,
         createdAt: serverTimestamp(),
@@ -297,12 +309,40 @@ await addDoc(collection(db, 'inventoryHistory'), {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 pt-4 border-t">
-                <div className="flex justify-between text-lg font-bold">
-                  <span>{t('order.totalAmount')}:</span>
-                  <span>€{totalAmount.toFixed(2)}</span>
-                </div>
-              </div>
+              <div className="mt-4 bg-purple-50 p-4 rounded-lg space-y-3">
+  <div className="flex items-center justify-between">
+    <span className="text-gray-600">{t('order.subtotal') || 'Subtotal'}:</span>
+    <span className="text-gray-900">€{subtotal.toFixed(2)}</span>
+  </div>
+  
+  <div className="flex items-center gap-2">
+    <span className="text-gray-600">{t('order.discount') || 'Discount'}:</span>
+    <input
+      type="number"
+      min="0"
+      value={discount}
+      onChange={(e) => setDiscount(e.target.value)}
+      placeholder="0"
+      className="w-20 px-2 py-1 border border-gray-300 rounded text-center"
+    />
+    <select
+      value={discountType}
+      onChange={(e) => setDiscountType(e.target.value)}
+      className="px-2 py-1 border border-gray-300 rounded"
+    >
+      <option value="percent">%</option>
+      <option value="fixed">€</option>
+    </select>
+    {discountAmount > 0 && (
+      <span className="text-red-600">-€{discountAmount.toFixed(2)}</span>
+    )}
+  </div>
+
+  <div className="flex items-center justify-between border-t pt-3">
+    <span className="font-semibold text-gray-900">{t('order.totalAmount')}:</span>
+    <span className="text-2xl font-bold text-purple-600">€{totalAmount.toFixed(2)}</span>
+  </div>
+</div>
             </div>
           )}
 
@@ -331,6 +371,20 @@ await addDoc(collection(db, 'inventoryHistory'), {
               <option value="paid">{t('orderHistory.paid')}</option>
               <option value="pending">{t('orderHistory.pending')}</option>
               <option value="refunded">{t('orderHistory.refunded')}</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('order.paymentMethod') || 'Payment Method'}
+            </label>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="bank">{t('order.bank') || 'Bank Transfer'}</option>
+              <option value="cash">{t('order.cash') || 'Cash'}</option>
             </select>
           </div>
 

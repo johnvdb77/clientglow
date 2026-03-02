@@ -114,6 +114,8 @@ export default function CustomerDetailModal({ customer, isOpen, onClose, onEdit,
   customerId={customer.id} 
   onAddOrder={() => setShowAddOrder(true)}
   key={refreshKey}
+  userId={userId}
+  t={t}
 />
 
 <QuickTemplates 

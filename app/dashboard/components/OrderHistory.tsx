@@ -1,7 +1,9 @@
 'use client';
 
+import EditOrderModal from './EditOrderModal';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import PrintOrder from './PrintOrder';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -28,12 +30,15 @@ interface Order {
 interface OrderHistoryProps {
   customerId: string;
   onAddOrder: () => void;
+  userId: string;
+  t: any;
 }
 
-export default function OrderHistory({ customerId, onAddOrder }: OrderHistoryProps) {
-  const t = useTranslations();
+export default function OrderHistory({ customerId, onAddOrder, userId, t }: OrderHistoryProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [printingOrder, setPrintingOrder] = useState<any>(null);
+  const [editingOrder, setEditingOrder] = useState<any>(null);
 
   const fetchOrders = async () => {
     try {
@@ -122,8 +127,20 @@ export default function OrderHistory({ customerId, onAddOrder }: OrderHistoryPro
                         })}
                       </span>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(order.paymentStatus)}`}>
-  {t(`orderHistory.${order.paymentStatus}`)}
-</span>
+                        {t(`orderHistory.${order.paymentStatus}`)}
+                      </span>
+                      <button
+                        onClick={() => setEditingOrder(order)}
+                        className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+                      >
+                        {t?.('actions.edit') || 'Edit'}
+                      </button>
+                      <button
+  onClick={() => setPrintingOrder(order)}
+  className="ml-2 text-gray-600 hover:text-gray-800 text-sm font-medium"
+>
+  🖨️ {t('order.print') || 'Print'}
+</button>
                     </div>
                     
                     {/* Show line items for new multi-product orders */}
@@ -160,6 +177,26 @@ export default function OrderHistory({ customerId, onAddOrder }: OrderHistoryPro
           </div>
         </>
       )}
+      {editingOrder && (
+  <EditOrderModal
+    order={editingOrder}
+    isOpen={!!editingOrder}
+    onClose={() => setEditingOrder(null)}
+    onSuccess={() => {
+      setEditingOrder(null);
+      fetchOrders();
+    }}
+    t={t}
+    userId={userId}
+  />
+)}
+{printingOrder && (
+  <PrintOrder
+    order={printingOrder}
+    t={t}
+    onClose={() => setPrintingOrder(null)}
+  />
+)}
     </div>
   );
 }
